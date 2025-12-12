@@ -1,0 +1,839 @@
+/* === 全局设置 === */
+* {
+    box-sizing: border-box; /* 这是一个防崩坏设置，让边框不撑大盒子 */
+    margin: 0;
+    padding: 0;
+}
+/* === 顶部标题栏 === */
+.top-header {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3c322a; 
+    color: #d7c8b8;
+    font-size: 14px;
+    letter-spacing: 1px; /* 增加文字间距 */
+    flex-shrink: 0; /* 防止被压缩 */
+}
+
+/* === 调整 body 布局 === */
+body {
+    font-family: "Microsoft YaHei", sans-serif;
+    background-color: #4a3f35; /* 暂时用深色背景 */
+    color: #d7c8b8;
+    height: 100vh; /* 占满屏幕高度 */
+    overflow: hidden; /* 禁止整个页面滚动，我们只让内容区滚动 */
+    display: flex;
+    flex-direction: column; 
+}
+
+/* === 页面容器 === */
+#main-container {
+    flex: 1; /* 占据导航栏以外的所有空间 */
+    position: relative;
+    overflow: hidden;
+}
+
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none; /* 默认所有页面隐藏 */
+    padding: 20px;
+    overflow-y: auto; /* 如果内容多了，允许内部滚动 */
+}
+
+.page.active {
+    display: block; /* 只有加了 active 类的页面才显示 */
+}
+
+/* === 1. 酒馆样式 === */
+.tavern-bg {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden; /* 关键：超出这个容器的部分都隐藏 */
+}
+/* 滚动容器的样式 */
+#scroll-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    /* 让容器宽度由内容决定 */
+    white-space: nowrap; 
+    transition: transform 0.5s ease-in-out;
+}
+#tavern-bg-img {
+    height: 100%; /* 关键：高度撑满容器 */
+    width: auto;  /* 关键：宽度自适应，保持图片比例 */
+    vertical-align: top; 
+}
+/* 小立绘  */
+.character-small {
+    width: 200px;
+    height: 185px;
+    background-size: contain; /* 保证图片完整显示，不被裁剪 */
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    
+    position: absolute;
+    cursor: pointer;
+    /* 我们可以加一个滤镜让它在背景中更突出 */
+    filter: drop-shadow(0 4px 5px rgba(0,0,0,0.5));
+    /* 让动画更平滑 */
+    transition: transform 0.2s ease-out, filter 0.2s ease-out; 
+
+}
+/* 鼠标悬停时放大 */
+.character-small:hover {
+    transform: scale(1.1); /* 放大到 1.1 倍 */
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6)); /* 阴影也变大一点 */
+}
+
+/* 鼠标点击时（按住不放）的效果 */
+.character-small:active {
+    transform: scale(1.05); /* 比悬停小一点，有按下去的感觉 */
+    filter: brightness(0.9); /* 整体变暗一点 */
+}
+
+.char-sheep {
+
+    background-image: url('images/sheep-small.png'); /* 设置图片 */
+    bottom: 138px; /* 调整位置 */
+    left: 103px;;
+    width: 200px;
+    height: 185px;
+}
+.char-chu {
+
+    background-image: url('images/chu-small.png'); /* 设置图片 */
+    bottom: 60px; /* 调整位置 */
+    left: 255px;;
+    width: 200px;
+    height: 185px;
+}
+.char-crow {
+
+    background-image: url('images/crow-small.png'); /* 设置图片 */
+    bottom: 40px; /* 调整位置 */
+    left: -30px;;
+    width: 200px;
+    height: 185px;
+}
+
+/* 背景滚动按钮 */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 10; /* 确保在图片上层 */
+    font-size: 20px;
+}
+
+.scroll-btn.left {
+    left: 10px;
+}
+
+.scroll-btn.right {
+    right: 10px;
+}
+
+
+/* === 遮罩层与视觉小说(VN)风格对话框 === */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(46, 38, 30, 0.85);
+    z-index: 1000;
+    /* 使用 Flexbox 来轻松地将对话框推到底部 */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* 关键：所有内容推向底部 */
+    align-items: center; /* 水平居中 */
+}
+
+.overlay.hidden {
+    display: none; /* 隐藏 */
+}
+
+/* 大立绘 (绝对定位，作为背景) */
+.character-big {
+    
+    background-size: contain;
+    background-position: center bottom; /* 确保从底部开始显示 */
+    background-repeat: no-repeat;
+    
+    /* 使用绝对定位让它不影响对话框的布局 */
+    position: absolute;
+    
+    left: 50%;
+    transform: translateX(-50%); /* 精准水平居中 */
+    z-index: 1001; /* 在遮罩层之上 */
+}
+/* 新的对话框样式 */
+.dialogue-box {
+    width: 95%; /* 占据大部分屏幕宽度 */
+    max-width: 700px; /* 在大屏幕上也不要太宽 */
+    min-height: 150px;
+    background-color: rgba(44, 36, 29, 0.9); /* 半透明的深棕色背景 */
+    color: #d7c8b8; /* 温暖的米色文字 */
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+    padding: 25px;
+    border-top: 3px solid #8a7a68; /* 顶部加一条亮边，增加质感 */
+    border-radius: 15px 15px 0 0; /* 只有顶部有圆角 */
+    
+    position: relative; /* 确保 z-index 生效 */
+    z-index: 1002; /* 关键：确保在立绘之上 */
+    cursor: pointer;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    margin-bottom: 10px; /* 离屏幕底部留一点空隙 */
+}
+/* 关闭提示文字样式 */
+.close-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    z-index: 1003; /* 在最顶层 */
+}
+
+/* === 底部导航栏 === */
+.bottom-nav {
+    height: 60px;
+    background-color: #3c322a;
+    display: flex;
+    justify-content: space-around; /* 按钮平均分布 */
+    align-items: center;
+    border-top: 1px solid #34495e;
+    z-index: 500;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: #95a5a6;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.nav-item.active {
+    color: #e6a23c; /* 选中时的金色 */
+}
+/* === 游戏机页面样式 === */
+#page-game {
+    
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px;
+}
+#page-game.active {
+    display: flex;
+}
+.game-selector {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    flex-shrink: 0;
+}
+
+.game-selector button {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    padding: 10px 20px;
+    border: 2px solid #8a7a68;
+    background-color: #4a3f35;
+    color: #d7c8b8;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.game-selector button:hover {
+    background-color: #6a5a4a;
+    border-color: #a89a88;
+}
+
+.game-selector button:disabled {
+    background-color: #3c322a;
+    color: #776b5d;
+    cursor: not-allowed;
+}
+
+.game-container {
+    flex: 1;
+    background-color: #2c241e;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+}
+
+#game-frame {
+    width: 100%;
+    height: 100%;
+}
+
+/* === 5. 画廊页面样式 === */
+/* === 5. 画廊页面样式 === */
+#page-gallery {
+    padding: 20px; 
+    /* display 和 flex-direction 已被移除 */
+}
+
+/* 新增这条规则，只在画廊激活时应用 flex 布局 */
+#page-gallery.active {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.gallery-header {
+     margin-bottom: 20px; /* 和下方的图片网格保持一些间距 */
+    }
+
+.gallery-header h2 {
+    text-align: center;
+    margin-bottom: 10px;
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-container .fa-search {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #95a5a6;
+}
+
+#gallery-search {
+    width: 100%;
+    height: 40px;
+    padding: 0 15px 0 40px; /* 左边留出图标位置 */
+    border-radius: 20px;
+    border: 1px solid #8a7a68;
+    background-color: #4a3f35;
+    color: #d7c8b8;
+    font-size: 16px;
+}
+
+#gallery-search::placeholder {
+    color: #95a5a6;
+}
+
+#gallery-grid {
+    flex-grow: 1; /* 占据剩余所有空间 */
+    overflow-y: auto; /* 允许网格区域独立滚动 */
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); /* 响应式网格布局 */
+    gap: 15px;
+}
+
+.gallery-thumbnail {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* 保持1:1的正方形比例 */
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.gallery-thumbnail:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+
+.gallery-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 保证图片填满容器且不变形 */
+}
+
+/* === 图片查看器样式 === */
+#image-viewer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.85);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+#image-viewer.hidden {
+    display: none;
+}
+
+.viewer-content {
+    position: relative;
+    max-width: 90vw;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #2c241e;
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    overflow-y: auto; /* 如果内容超出高度，自动显示垂直滚动条 */
+    overflow-x: hidden; /* 强制禁止水平滚动 */
+}
+
+#viewer-image {
+    max-width: 100%;
+    object-fit: contain;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+
+}
+
+.viewer-details {
+    padding: 15px 20px;
+    color: #d7c8b8;
+    text-align: center;
+}
+
+#viewer-name {
+    font-size: 22px;
+    margin-bottom: 10px;
+}
+
+#viewer-tags {
+    margin-bottom: 10px;
+}
+
+#viewer-tags span {
+    display: inline-block;
+    background-color: #4a3f35;
+    padding: 3px 10px;
+    border-radius: 15px;
+    margin: 3px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+#viewer-tags span:hover {
+    background-color: #6a5a4a;
+}
+
+#viewer-author {
+    font-size: 16px;
+    color: #95a5a6;
+    cursor: pointer;
+}
+
+#viewer-author:hover {
+    color: #e6a23c;
+}
+
+.viewer-close-btn {
+    position: absolute;
+    top: 10px; 
+    right: 10px;
+    width: 35px;
+    height: 35px;
+    background-color: rgba(230, 162, 60, 0.9);
+    color: #2c241e;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 20px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    z-index: 10; /* 确保它浮在图片上面 */
+}
+/* === 图片查看器元数据样式 === */
+.viewer-meta {
+    margin-top: 15px; /* 距离上方作者名的距离 */
+    font-size: 13px;  /* 字体稍微小一点 */
+    color: #95a5a6;   /* 灰色文字 */
+    display: flex;
+    justify-content: center; /* 居中显示 */
+    align-items: center;
+    gap: 10px; /* 两个信息之间的间距 */
+}
+
+.viewer-meta i {
+    margin-right: 5px; /* 图标和文字的间距 */
+    color: #e6a23c;    /* 图标用金色 */
+}
+
+.viewer-meta .separator {
+    color: #4a3f35; /* 分隔符颜色深一点 */
+}
+/* === 美化详情页的滚动条 (Webkit内核浏览器) === */
+.viewer-content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.viewer-content::-webkit-scrollbar-track {
+    background: #2c241e; 
+    border-radius: 0 10px 10px 0;
+}
+
+.viewer-content::-webkit-scrollbar-thumb {
+    background: #4a3f35; 
+    border-radius: 4px;
+}
+
+.viewer-content::-webkit-scrollbar-thumb:hover {
+    background: #e6a23c; 
+}
+
+/* === 唱片机挂件样式 === */
+#music-widget {
+    position: fixed;
+    bottom: 80px; /* 位于底部导航栏上方 */
+    right: 20px;  /* 靠右显示 */
+    z-index: 1500; /* 确保在普通内容之上，但在弹窗之下 */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 唱片圆盘 */
+#music-disc {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #1a1a1a; /* 黑胶底色 */
+    border: 2px solid #d7c8b8;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+}
+
+#music-disc:active {
+    transform: scale(0.95); /* 点击时的按压感 */
+}
+
+/* 唱片封面图 */
+#music-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+/* 唱片中间的小孔 */
+.disc-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px;
+    height: 12px;
+    background-color: #2c241e;
+    border-radius: 50%;
+    border: 2px solid #d7c8b8;
+    z-index: 2;
+}
+
+/* 切歌按钮 */
+#music-control-next {
+    width: 30px;
+    height: 30px;
+    background-color: rgba(44, 36, 29, 0.9);
+    color: #d7c8b8;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: background-color 0.2s;
+}
+
+#music-control-next:hover {
+    background-color: #e6a23c;
+    color: #2c241e;
+}
+
+/* === 旋转动画 === */
+@keyframes rotate-disc {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* 播放时的旋转类 */
+.rotating {
+    animation: rotate-disc 5s linear infinite;
+}
+
+/* 暂停时停止旋转 */
+.paused {
+    animation-play-state: paused;
+}
+
+/* =========================================
+   === 新版：命运投掷 (骰子功能) 样式 ===
+   ========================================= */
+
+/* 1. 半圆形入口按钮 (挂在标题栏下方) */
+.fate-trigger {
+    position: absolute;
+    top: 50px; /* 紧贴 Header 底部 (Header高度是50px) */
+    left: 50%;
+    transform: translateX(-50%); /* 水平居中 */
+    width: 60px;
+    height: 30px; /* 高度是宽度的一半 */
+    background-color: #3c322a; /* 和 Header 颜色一致 */
+    border-radius: 0 0 30px 30px; /* 下半圆：左下和右下圆角 */
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #e6a23c; /* 金色图标 */
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 900; /* 保证在背景之上，但在遮罩层之下 */
+    box-shadow: 0 4px 5px rgba(0,0,0,0.3);
+    transition: height 0.2s, padding-top 0.2s, color 0.2s;
+}
+
+.fate-trigger:hover {
+    height: 38px; /* 悬停时稍微变长一点 */
+    padding-top: 5px;
+    color: #fff; /* 悬停变白 */
+}
+
+/* 2. 投骰子面板 (遮罩层) */
+#dice-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 2000; /* 最顶层 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#dice-overlay.hidden {
+    display: none;
+}
+
+/* 3. 骰盒主体 (计算器风格) */
+.dice-box {
+    width: 340px;
+    background-color: #2c241e;
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #8a7a68;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    animation: popIn 0.3s ease-out;
+}
+
+/* 弹窗动画 */
+@keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+/* 4. 顶部 JRRP 按钮 */
+.dice-header {
+    margin-bottom: 15px;
+    border-bottom: 1px solid #4a3f35;
+    padding-bottom: 10px;
+}
+
+.jrrp-btn {
+    background: linear-gradient(45deg, #e6a23c, #d35400);
+    border: none;
+    color: white;
+    padding: 6px 20px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    transition: transform 0.1s;
+}
+
+.jrrp-btn:hover {
+    transform: scale(1.05);
+    filter: brightness(1.1);
+}
+
+/* 5. 显示屏区域 */
+.dice-screen {
+    background-color: #1a1a1a;
+    border: 1px solid #5e5044;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    min-height: 90px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#dice-formula-display {
+    color: #95a5a6;
+    font-size: 14px;
+    word-break: break-all; /* 防止公式太长撑破盒子 */
+    line-height: 1.4;
+}
+
+#dice-total-display {
+    color: #e6a23c;
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 8px;
+    font-family: 'Courier New', monospace;
+    text-shadow: 0 0 10px rgba(230, 162, 60, 0.2);
+}
+
+/* 6. 键盘按钮区 */
+.dice-keyboard {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.keyboard-section {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+}
+
+/* 通用按钮样式 */
+.dice-keyboard button {
+    background-color: #4a3f35;
+    color: #d7c8b8;
+    border: 1px solid #5e5044;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-family: 'Noto Serif SC', serif;
+    transition: background-color 0.2s;
+}
+
+.dice-keyboard button:hover {
+    background-color: #6a5a4a;
+}
+
+.dice-keyboard button:active {
+    transform: scale(0.95);
+}
+
+/* D20 特殊高亮 */
+.key-d20 {
+    border-color: #e6a23c !important;
+    color: #e6a23c !important;
+    font-weight: bold;
+}
+
+/* 修正值按钮 (+1, -1) 稍微小一点 */
+.modifiers button {
+    background-color: #342a21;
+    font-size: 12px;
+    min-width: 40px;
+}
+
+/* 7. 底部操作按钮 (清空/投掷) */
+.dice-actions {
+    display: flex;
+    gap: 15px;
+}
+
+.dice-actions button {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: filter 0.2s;
+}
+
+.btn-clear {
+    background-color: #5e5044;
+    color: #d7c8b8;
+}
+
+.btn-roll {
+    background-color: #e6a23c;
+    color: #2c241e;
+    box-shadow: 0 4px 10px rgba(230, 162, 60, 0.3);
+}
+
+.btn-roll:hover {
+    filter: brightness(1.1);
+}
+
+.dice-close-hint {
+    margin-top: 15px;
+    font-size: 12px;
+    color: #5e5044;
+}
+
+/* === 骰子按钮的迷你模式 (用于非酒馆页面) === */
+.fate-trigger.mini {
+    top: 42px; /* 向上收缩，大部分缩进标题栏 */
+    transform: translateX(-50%) scale(0.7); /* 整体变小 */
+    opacity: 0.4; /* 变半透明，减少注意力干扰 */
+    pointer-events: auto; /* 依然可以点击 */
+}
+
+/* 鼠标悬停在迷你按钮上时，临时恢复原状 */
+.fate-trigger.mini:hover {
+    top: 50px;
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+}
+/* === 通用 iframe 样式 (用于隙间巷和游戏机) === */
+.content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
