@@ -1,0 +1,141 @@
+*, *::before, *::after {
+    box-sizing: border-box;
+    user-select: none;
+}
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #f7f7f7;
+}
+.world {
+    overflow: hidden;
+    position: relative;
+}
+.score {
+    position: absolute;
+    font-size: 3vmin;
+    right: 1vmin;
+    top: 1vmin;
+    color: #555;
+}
+.start-screen {
+    position: absolute;
+    font-size: 3vmin;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #555;
+}
+.hide {
+    display: none;}
+/* 在 games/dino/style.css 中添加 */
+
+/* 新的背景容器样式 */
+.ground-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%; /* 高度可以根据你的图片调整，100%会撑满 */
+    
+    /* 【核心】设置背景图 */
+    background-image: url('imgs/ground.png'); /* 确保这里是你自己的背景图文件名 */
+    background-repeat: repeat-x; /* 让背景在水平方向上无限重复 */
+    background-size: auto 100%;  /* 高度撑满，宽度自适应以保持比例 */
+}
+
+
+.dino {
+    --bottom: 0;
+    position: absolute;
+    left: 1%;
+    height: 30%;
+    bottom: calc(var(--bottom) * 1%);
+}
+.cactus {
+    position: absolute;
+    left: calc(var(--left) * 1%);
+    height: 30%;
+    bottom: 0;
+}
+/* --- 菜单和皮肤选择界面样式 (优化版) --- */
+.menu-screen, .skin-selection-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(247, 247, 247, 0.9);
+    display: flex;
+    flex-direction: column; /* 【优化1】: 改为垂直布局 */
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 10; /* 确保菜单在最上层 */
+}
+
+.menu-screen button, .skin-selection-screen button {
+    font-size: 2.5vmin;
+    padding: 1.5vmin 3vmin;
+    border-radius: 1vmin;
+    border: 2px solid #555;
+    background-color: #fff;
+    color: #555;
+    cursor: pointer;
+    transition: all 0.2s;
+    min-width: 200px; /* 让按钮宽度统一 */
+    text-align: center;
+}
+
+.menu-screen button:hover, .skin-selection-screen button:hover {
+    background-color: #555;
+    color: #fff;
+}
+
+.skin-selection-screen h2 {
+    font-size: 4vmin;
+    color: #555;
+    margin-bottom: 1vmin;
+}
+
+.skin-grid {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* 允许换行 */
+    justify-content: center;
+    padding: 10px;
+}
+
+.skin-choice {
+    cursor: pointer;
+    border: 4px solid transparent;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    transition: all 0.2s;
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 【优化2】: 让选中状态更明显 */
+.skin-choice.selected {
+    border-color: #3498db;
+    background-color: #fff;
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+    transform: scale(1.05);
+}
+
+/* 【优化3】: 缩小示意图尺寸 */
+.skin-choice img {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.skin-choice p {
+    margin-top: 5px;
+    font-size: 2vmin;
+    color: #555;
+}
