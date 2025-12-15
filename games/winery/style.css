@@ -1,0 +1,303 @@
+/* === 狄奥尼索斯的酒庄 V5.0 === */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap');
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+    background-color: #2c241e;
+    color: #d7c8b8;
+    font-family: 'Noto Serif SC', serif;
+    margin: 0; padding: 0;
+    height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    overflow: hidden;
+}
+
+.game-container {
+    width: 100%; height: 100%; max-width: 600px;
+    background-color: #3c322a;
+    display: flex; flex-direction: column;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* === 1. 开始页面 === */
+#start-screen {
+    position: absolute; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background-color: #2c241e;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    z-index: 200;
+}
+.title-area { text-align: center; margin-bottom: 60px; }
+.title-area h1 { 
+    font-size: 42px; color: #e6a23c; margin: 0; 
+    line-height: 1.2; text-shadow: 0 4px 10px rgba(0,0,0,0.8); 
+    letter-spacing: 5px;
+}
+.start-buttons { display: flex; flex-direction: column; gap: 20px; width: 220px; }
+.menu-btn {
+    padding: 15px; border: 2px solid #e6a23c; background: rgba(230, 162, 60, 0.1);
+    color: #e6a23c; font-family: inherit; font-size: 18px; font-weight: bold;
+    cursor: pointer; text-align: center; text-decoration: none;
+    transition: all 0.2s; border-radius: 5px;
+}
+.menu-btn:active { transform: scale(0.95); background: rgba(230, 162, 60, 0.3); }
+.menu-btn.secondary { border-color: #8a7a68; color: #8a7a68; font-size: 16px; background: none; }
+.menu-btn.exit { border: none; color: #5d4037; font-size: 14px; margin-top: 10px; background: none; }
+.menu-btn.exit:hover { color: #e74c3c; }
+.version-text { position: absolute; bottom: 10px; right: 10px; font-size: 10px; color: #4a3f35; }
+
+/* === 2. 游戏主界面 === */
+#game-interface {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    flex: 1; 
+}
+
+/* 状态栏 (新布局) */
+.status-bar {
+    height: 60px; background-color: #2c241e;
+    border-bottom: 2px solid #8a7a68;
+    display: flex; justify-content: space-between; /* 左右分开 */
+    align-items: center;
+    padding: 0 15px; font-size: 14px; flex-shrink: 0; z-index: 50;
+}
+
+.status-left, .status-right {
+    display: flex; align-items: center; gap: 15px;
+}
+
+.status-item { display: flex; align-items: center; gap: 5px; }
+.status-item i { color: #e6a23c; }
+#money-display { transition: color 0.2s; font-weight: bold; }
+
+.weather-box { display: flex; align-items: center; }
+#weather-icon { font-size: 18px; color: #e6a23c; }
+
+/* 头部下一天按钮 */
+.header-next-btn {
+    background-color: #e6a23c; color: #2c241e;
+    border: none; padding: 6px 12px; border-radius: 20px;
+    font-weight: bold; cursor: pointer; font-size: 12px;
+    display: flex; align-items: center; gap: 5px;
+    transition: transform 0.1s, filter 0.2s;
+}
+.header-next-btn:hover { filter: brightness(1.1); }
+.header-next-btn:active { transform: scale(0.95); }
+
+/* 屏幕区域 */
+.game-screen {
+    flex: 1; position: relative; overflow: hidden;
+    background-color: #4a3f35;
+    display: flex; flex-direction: column;
+}
+#scene-content { width: 100%; height: 100%; overflow-y: auto; }
+
+/* 底部导航 */
+.bottom-nav {
+    height: 70px; background-color: #2c241e;
+    border-top: 2px solid #8a7a68;
+    display: flex; justify-content: space-around; align-items: center;
+    flex-shrink: 0; z-index: 50;
+}
+.nav-btn {
+    background: none; border: none; color: #95a5a6;
+    font-family: inherit; font-size: 10px;
+    display: flex; flex-direction: column; align-items: center;
+    gap: 5px; cursor: pointer; width: 16.6%; transition: color 0.2s;
+}
+.nav-btn.active { color: #e6a23c; transform: translateY(-2px); }
+.nav-btn i { font-size: 20px; margin-bottom: 2px; }
+
+/* === 农场 === */
+.farm-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    height: 100%; width: 100%;
+    padding: 10px; gap: 8px;
+    background: linear-gradient(to bottom, #4a3f35 0%, #5d4037 100%);
+}
+.plot-cell {
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 8px;
+    position: relative;
+    display: flex; justify-content: center; align-items: flex-end;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+.plot-cell.locked { background-color: rgba(0,0,0,0.5); justify-content: center; align-items: center; }
+.plot-cell.selected { border-color: #e6a23c; background-color: rgba(230, 162, 60, 0.15); }
+
+.vine-stem { width: 4px; border-radius: 2px; position: absolute; bottom: 5px; transition: height 0.5s; }
+.vine-grape { width: 12px; height: 12px; border-radius: 50%; position: absolute; bottom: 20px; box-shadow: 2px 2px 0 rgba(0,0,0,0.3); }
+.water-indicator {
+    position: absolute; top: 5px; left: 5px;
+    width: 6px; height: 40px;
+    background-color: rgba(0,0,0,0.3);
+    border-radius: 3px; overflow: hidden;
+}
+.water-bar {
+    width: 100%; position: absolute; bottom: 0;
+    transition: height 0.3s, background-color 0.3s;
+}
+
+/* === 商店/仓库/设置 通用列表 === */
+.tab-header {
+    display: flex; background-color: #2c241e;
+    border-bottom: 1px solid #8a7a68;
+}
+.tab-header button {
+    flex: 1; padding: 15px; background: none; border: none;
+    color: #95a5a6; font-family: inherit; cursor: pointer; font-size: 14px;
+}
+.tab-header button.active { color: #e6a23c; border-bottom: 3px solid #e6a23c; font-weight: bold; }
+
+.list-container {
+    padding: 15px;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 15px;
+}
+.card-item {
+    background-color: #3c322a; border: 1px solid #8a7a68;
+    border-radius: 8px; padding: 15px; text-align: center;
+    transition: transform 0.2s;
+}
+.card-item:active { transform: scale(0.98); }
+.upgrade-card { border-color: #e6a23c; }
+.card-title { font-weight: bold; color: #e6a23c; margin-bottom: 5px; font-size: 14px; }
+.card-desc { font-size: 11px; color: #95a5a6; margin-bottom: 10px; height: 30px; overflow: hidden; }
+.card-price { font-size: 12px; color: #d7c8b8; background: #2c241e; padding: 2px 8px; border-radius: 10px; display: inline-block; }
+
+.action-btn {
+    background-color: #e6a23c; color: #2c241e; border: none;
+    padding: 10px; border-radius: 4px; font-weight: bold;
+    cursor: pointer; margin-top: 8px; width: 100%; font-size: 12px;
+    transition: filter 0.2s, transform 0.1s;
+}
+.action-btn:hover { filter: brightness(1.1); }
+.action-btn:active { transform: translateY(2px); }
+.action-btn.danger { background-color: #c0392b; color: white; }
+
+/* === 设置页面 === */
+.settings-container { padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+.setting-row {
+    background-color: #3c322a; padding: 15px; border-radius: 8px;
+    display: flex; justify-content: space-between; align-items: center;
+    border: 1px solid #5d4037;
+}
+.setting-label { font-weight: bold; color: #d7c8b8; }
+
+/* === 图鉴 === */
+.handbook-container { padding: 15px; }
+.handbook-entry {
+    background-color: #3c322a; border: 1px solid #5d4037;
+    border-radius: 8px; margin-bottom: 15px; overflow: hidden;
+}
+.handbook-entry.locked { opacity: 0.5; }
+.hb-header {
+    background-color: #2c241e; padding: 10px;
+    font-weight: bold; border-bottom: 1px solid #5d4037;
+}
+.hb-content { padding: 10px; }
+.lore-row {
+    display: flex; align-items: flex-start; margin-bottom: 8px;
+    font-size: 12px;
+}
+.lore-row.locked .lore-text { color: #5d4037; font-style: italic; }
+.lore-badge { width: 60px; flex-shrink: 0; font-weight: bold; }
+.lore-text { flex: 1; color: #d7c8b8; }
+
+/* === 浮动操作栏 === */
+.floating-controls {
+    position: absolute; bottom: 30px; left: 50%;
+    transform: translateX(-50%);
+    display: flex; gap: 20px;
+    background-color: rgba(44, 36, 29, 0.95);
+    padding: 15px 25px; border-radius: 40px;
+    border: 1px solid #e6a23c; z-index: 30;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+}
+.control-btn {
+    width: 45px; height: 45px; border-radius: 50%;
+    border: none; background-color: #3c322a;
+    color: #d7c8b8; font-size: 20px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    transition: transform 0.1s, background-color 0.2s;
+}
+.control-btn:active { transform: scale(0.9); }
+.control-btn:hover { background-color: #e6a23c; color: #2c241e; }
+
+/* 弹窗 */
+.modal-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); z-index: 100;
+    display: flex; justify-content: center; align-items: center;
+}
+.modal-box {
+    background: #2c241e; border: 2px solid #e6a23c;
+    padding: 25px; border-radius: 15px; text-align: center; width: 80%;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+}
+
+/* 动画定义 */
+@keyframes slideUp {
+    from { transform: translate(-50%, 20px); opacity: 0; }
+    to { transform: translate(-50%, 0); opacity: 1; }
+}
+.slide-up { animation: slideUp 0.3s ease-out; }
+
+.hidden { display: none !important; }
+/* 酿造槽位样式 */
+.barrel-slot {
+    background-color: #3e2723;
+    border: 2px solid #5d4037;
+    border-radius: 10px;
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.barrel-slot:hover { transform: translateX(5px); border-color: #e6a23c; }
+
+.barrel-icon {
+    width: 50px; height: 50px;
+    background-color: #2c1e16;
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    font-size: 24px; color: #8d6e63;
+}
+.barrel-icon.working { color: #e6a23c; border: 2px solid #e6a23c; }
+.barrel-icon.empty { border: 2px dashed #5d4037; }
+
+/* 酿造设置弹窗 */
+.brew-modal-content { text-align: left; }
+.brew-modal-content h3 { text-align: center; color: #e6a23c; margin-top: 0; }
+.step-box { background-color: #3c322a; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+.step-box label { display: block; font-weight: bold; margin-bottom: 5px; color: #d7c8b8; font-size: 12px; }
+select { width: 100%; padding: 8px; background: #2c241e; color: white; border: 1px solid #8a7a68; }
+.radio-group { display: flex; flex-direction: column; gap: 5px; }
+.radio-group label { font-weight: normal; }
+/* 酒品详情卡片 */
+.wine-detail-card {
+    background: #2c241e; border: 2px solid #e6a23c;
+    padding: 20px; border-radius: 10px; width: 90%; max-width: 400px;
+    text-align: center;
+}
+.wine-tags {
+    display: flex; justify-content: center; gap: 10px; margin: 10px 0;
+}
+.wine-tags span {
+    background: #3e2723; padding: 4px 8px; border-radius: 4px; font-size: 12px; color: #d7c8b8;
+}
+.tasting-notes {
+    text-align: left; background: rgba(0,0,0,0.2); padding: 15px;
+    border-radius: 8px; margin-bottom: 20px; font-size: 14px; line-height: 1.6;
+    color: #d7c8b8;
+}
+.wine-footer { display: flex; gap: 10px; }
