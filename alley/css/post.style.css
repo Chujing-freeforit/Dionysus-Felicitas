@@ -1,0 +1,268 @@
+/* alley/post.style.css (暗色主题升级版) */
+
+body {
+    /* --- 核心风格统一 --- */
+    background-color: #1a1a1a;
+    
+    font-family: 'Cutive Mono', monospace;
+    color: #ccc; /* 默认文字颜色改为浅灰色 */
+}
+
+.post-detail-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    /* 移除白色背景和阴影，让它融入页面 */
+    padding-top: 60px;
+}
+
+/* 返回按钮 */
+.back-button-wrapper {
+    /* --- 核心改动开始 --- */
+    position: fixed;      /* 1. 固定定位 */
+    top: 0;               /* 2. 紧贴顶部 */
+    left: 0;              /* 3. 紧贴左边 */
+    width: 100%;          /* 4. 宽度占满 */
+    z-index: 100;         /* 5. 保证在最上层 */
+    
+    background-color: #1a1a1a; /* 6. 给它一个背景色，防止下面的文字透上来 */
+    padding: 10px 20px;   /* 7. 增加内边距，让按钮好看点 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5); /* 8. 加个阴影，更有层次感 */
+    /* --- 核心改动结束 --- */
+    
+    margin-bottom: 20px; /* 这行可以保留，也可以删掉，影响不大了 */
+}
+
+.back-button {
+    text-decoration: none;
+    color: #ccc; /* 链接颜色改为浅灰色 */
+    font-weight: bold;
+}
+
+.back-button:hover {
+    text-decoration: underline;
+    color: #fff; /* 鼠标悬停时变白 */
+}
+
+/* 主楼内容 */
+#main-post-content {
+    border-bottom: 1px solid #444; /* 边框颜色变深 */
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+}
+
+.post-detail-title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #fff; /* 标题颜色改为白色 */
+}
+
+.post-detail-meta {
+    font-size: 14px;
+    color: #888; /* 元信息颜色不变，依然适用 */
+    margin-bottom: 20px;
+}
+
+.post-detail-body {
+    line-height: 1.8;
+    color: #ccc; /* 正文颜色改为浅灰色 */
+}
+
+.post-detail-body h3 {
+    margin-top: 20px;
+    border-left: 4px solid #555; /* 左侧装饰边框颜色变深 */
+    padding-left: 10px;
+    color: #eee;
+}
+
+.post-detail-body p {
+    margin-bottom: 15px;
+}
+
+/* 回复列表 */
+.replies-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #eee; /* 标题颜色变亮 */
+}
+
+.reply-card {
+    display: flex;
+    padding: 15px 0; /* 调整内边距 */
+    border-top: 1px solid #333; /* 分割线颜色变深 */
+}
+
+.reply-avatar {
+    width: 40px;
+    height: 40px;
+    margin-right: 15px;
+}
+
+.reply-avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.reply-content {
+    flex: 1;
+}
+
+.reply-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.reply-author {
+    font-weight: bold;
+    color: #eee; /* 作者名字颜色变亮 */
+}
+
+.reply-timestamp {
+    font-size: 12px;
+    color: #888; /* 时间戳颜色不变 */
+}
+
+.reply-comment {
+    line-height: 1.6;
+    color: #ccc; /* 回复内容颜色改为浅灰色 */
+}
+/* --- 新增：作者信息样式 --- */
+.post-author-info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.author-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin-right: 10px;
+}
+.author-name {
+    font-weight: bold;
+    color: #eee;
+}
+
+/* --- 调查员视觉增强 (手机适配版) --- */
+
+/* 
+   既然你是调查员，这些信息对你来说就是默认可见的。
+   我们用样式把它和普通文字区分开。
+*/
+.hidden-rule {
+    /* 1. 默认显示，不再隐藏 */
+    display: block !important; 
+    
+    /* 2. 样式设计：像是一个系统警告框 */
+    color: #ff6b6b; /* 鲜艳的红色 */
+    font-size: 13px;
+    background-color: rgba(255, 0, 0, 0.1); /* 淡淡的红色背景 */
+    border-left: 3px solid #ff6b6b; /* 左边加一条红线 */
+    padding: 5px 10px; /* 内边距 */
+    margin-top: 5px;
+    margin-bottom: 15px;
+    
+    /* 3. 加一点“科技感”字体（可选） */
+    font-family: monospace; 
+}
+
+/* 给普通版规加一点透明度，让红色批注更显眼 */
+.rule-block p:not(.hidden-rule) {
+    opacity: 0.8;
+}
+/* --- 小说/报告 阅读器样式 --- */
+
+/* A面：公开小说内容 */
+.story-intro {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 20px;
+}
+.story-paragraph {
+    text-indent: 2em; /* 首行缩进两个字符，更有小说感 */
+    line-height: 1.8; /* 增加行高，阅读更舒适 */
+    margin-bottom: 15px;
+    color: #ccc;
+}
+
+/* B面：机密报告内容 (默认显示) */
+.classified-content {
+    display: block; /* 直接显示 */
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid #444;
+    padding: 20px;
+    margin-top: 30px;
+    border-radius: 4px;
+}
+
+
+.classified-divider {
+    border: none;
+    border-top: 2px dashed #555;
+    margin-bottom: 20px;
+}
+
+.classified-header {
+    color: #ff6b6b;
+    text-align: center;
+    font-family: monospace;
+    letter-spacing: 3px;
+    margin-bottom: 20px;
+}
+
+.classified-content h4 {
+    color: #9b91d1;
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+    margin-top: 20px;
+}
+
+.classified-content p, .classified-content li {
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.7;
+}
+/* --- 手机端排版优化 (Media Query) --- */
+@media (max-width: 768px) {
+
+    /* 1. 缩小机密报告的整体内边距 */
+    .classified-content {
+        padding: 15px;
+        margin-top: 20px;
+    }
+
+    /* 2. 缩小机密报告的标题字体和间距 */
+    .classified-header {
+        font-size: 18px; /* 缩小字体 */
+        letter-spacing: 2px; /* 缩小字间距 */
+        margin-bottom: 15px;
+    }
+
+    /* 3. 缩小行动报告的小标题字体 */
+    .classified-content h4 {
+        font-size: 16px;
+        margin-top: 15px;
+    }
+
+    /* 4. 缩小正文和列表的字体 */
+    .classified-content p, .classified-content li {
+        font-size: 13px;
+    }
+
+    /* 5. 优化整个帖子容器的边距，让它在手机上更贴边 */
+    .post-detail-container {
+        margin: 10px;
+        padding: 15px;
+        padding-top: 60px; /* 保持给返回按钮留出的空间 */
+    }
+
+    /* 6. 缩小主标题字体 */
+    .post-detail-title {
+        font-size: 20px;
+    }
+}

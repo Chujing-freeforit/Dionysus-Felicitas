@@ -1,0 +1,226 @@
+/* === 这里的样式只属于隙间巷，不会影响外面 === */
+* { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+}
+
+body {
+    background-color: #0d0d0d; /* 深邃黑背景 */
+    color: #999;
+    font-family: sans-serif;
+    padding: 10px;
+     /* --- 新增：为了防止底部菜单挡住内容，我们需要加一个底部的内边距 --- */
+    /* 60px 大概是菜单栏的高度，这样内容就不会被遮住了 */
+    padding-bottom: 60px;
+    /* 隐藏滚动条但允许滚动 (Webkit) */
+    overflow-y: auto; 
+}
+
+/* 隐藏滚动条样式 */
+body::-webkit-scrollbar { 
+    width: 0; 
+}
+
+/* 头部 */
+.bbs-header {
+    background-color: #3d3566;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    color: white;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.bbs-title { 
+    font-size: 20px; 
+    font-weight: bold; 
+    margin-bottom: 5px; 
+}
+.bbs-subtitle { 
+    font-size: 12px; 
+    color: #c8c0e6; 
+    opacity: 0.8; 
+}
+
+/* 标签栏 */
+.bbs-tags {
+    background-color: #1a1a1a;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+}
+.bbs-tags .tag { 
+    padding: 2px 5px; 
+    cursor: pointer; 
+    color: #666; 
+}
+.bbs-tags .tag.active { 
+    color: #9b91d1; 
+    font-weight: bold; 
+    border-bottom: 2px solid #7C72B9; 
+}
+.bbs-tags .divider { 
+    color: #333; 
+    margin: 0 5px; 
+    font-size: 10px; 
+}
+
+/* 搜索框 */
+.bbs-search {
+    background-color: #1a1a1a;
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #333;
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* 帖子列表 */
+.bbs-post {
+    background-color: #1a1a1a;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    border: 1px solid #333;
+    transition: background-color 0.2s;
+    cursor: pointer;
+}
+.bbs-post:hover { 
+    background-color: #252525; 
+}
+
+/* 置顶帖 */
+.bbs-post.pinned { 
+    background-color: #2a1f1f; 
+    border-color: #4a2222; 
+}
+
+.post-header { 
+    display: flex; 
+    align-items: center; 
+    margin-bottom: 8px; 
+    flex: 1; 
+}
+.badge { 
+    font-size: 11px; 
+    padding: 2px 5px; 
+    border-radius: 3px; 
+    margin-right: 6px; 
+    color: white; 
+}
+.badge.pinned { 
+    background-color: #8b3a3a; 
+}
+.badge.normal { 
+    background-color: #5a527a; 
+}
+
+.post-title { 
+    color: #e0e0e0; 
+    font-size: 15px; 
+    font-weight: bold; 
+    /* --- 新增：标题溢出省略三件套 --- */
+    white-space: nowrap;      /* 1. 强制不换行 */
+    overflow: hidden;         /* 2. 隐藏超出部分 */
+    text-overflow: ellipsis;  /* 3. 在被隐藏的地方显示省略号 */
+     flex: 1;          /* 1. 告诉标题：占据所有剩余空间 */
+    min-width: 0;     /* 2. 告诉标题：在必要时，你可以被无限压缩（这是解决问题的关键！） */
+}
+.post-preview {
+    color: #999; 
+    font-size: 12px; 
+    line-height: 1.5; 
+    margin-bottom: 8px;
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical; 
+    overflow: hidden;
+}
+.post-meta { 
+    color: #555; 
+    font-size: 11px; 
+    text-align: right; 
+}
+
+/* 分页器 */
+.bbs-pagination {
+    background-color: #1a1a1a; 
+    padding: 8px; 
+    border-radius: 8px; 
+    border: 1px solid #333;
+    text-align: center; 
+    font-size: 12px; 
+    margin-top: 15px; 
+    color: #666;
+}
+.bbs-pagination .page-num { 
+    margin: 0 5px; 
+    cursor: pointer; 
+}
+.bbs-pagination .page-num.current { 
+    background-color: #5a527a; 
+    color: white; 
+    padding: 2px 6px; 
+    border-radius: 3px; 
+}
+
+/* 底部菜单 */
+.bbs-footer-menu {
+    /* --- 核心改动开始 --- */
+    position: fixed;  /* 1. 固定定位 */
+    bottom: 0;        /* 2. 紧贴底部 */
+    left: 0;          /* 3. 紧贴左边 */
+    width: 100%;      /* 4. 宽度占满屏幕 */
+    z-index: 100;     /* 5. 保证它在最上层，不被帖子遮挡 */
+    
+    margin: 0;        /* 6. 去掉原来的外边距，不需要了 */
+    border-radius: 0; /* 7. 去掉圆角，变成直角的通栏样式 */
+    border: none;     /* 8. 去掉四周的边框 */
+    border-top: 1px solid #333; /* 9. 只保留顶部的分割线 */
+    /* --- 核心改动结束 --- */
+
+    background-color: #1a1a1a; 
+    padding: 10px; 
+    
+    /* 保持原来的布局方式 */
+    display: flex; 
+    justify-content: space-around; 
+    align-items: center; 
+    font-size: 12px;
+}
+
+.menu-item { 
+    cursor: pointer; 
+    color: #666; 
+    display: flex; 
+    align-items: center; 
+    gap: 4px; 
+}
+.menu-item:hover { 
+    color: #9b91d1; 
+}
+.menu-item.highlight { 
+    background-color: #5a527a; 
+    color: white; 
+    padding: 4px 12px; 
+    border-radius: 15px; 
+}
+/* --- 新增：修复帖子链接样式 --- */
+
+/* 
+  选择器 .post-link-wrapper 的意思是：
+  “找到所有 class 为 post-link-wrapper 的元素” (也就是我们那个 <a> 标签)
+*/
+.post-link-wrapper {
+    text-decoration: none; /* 移除下划线 */
+    color: inherit;      /* 颜色继承父元素，这样它就不会显示为蓝色/紫色 */
+}
+

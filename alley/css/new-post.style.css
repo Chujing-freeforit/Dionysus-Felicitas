@@ -1,0 +1,77 @@
+/* new-post.style.css */
+
+/* 容器样式：限制最大宽度，让它在电脑屏幕上不要太宽，手机上则占满 */
+.publish-container {
+    max-width: 800px;
+    margin: 0 auto; /* 居中 */
+    padding: 10px;
+}
+
+/* 表单组：每一项（标题、分类、内容）之间留点空隙 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* 标签文字：比如“标题”、“分类”这几个字 */
+.form-group label {
+    display: block; /* 让它独占一行 */
+    margin-bottom: 8px;
+    color: #9b91d1; /* 使用我们主题的紫色 */
+    font-weight: bold;
+    font-size: 14px;
+}
+
+/* 输入框通用样式 (标题、下拉框、文本域) */
+/* 这里的 input, select, textarea 都是 HTML 标签名 */
+input[type="text"], 
+select, 
+textarea {
+    width: 100%; /* 宽度拉满 */
+    background-color: #1a1a1a; /* 深色背景 */
+    border: 1px solid #333;    /* 深灰色边框 */
+    color: #ccc;               /* 浅灰色文字 */
+    padding: 12px;             /* 内边距，让字不要贴着边框 */
+    border-radius: 8px;        /* 圆角 */
+    font-family: inherit;      /* 继承网页的字体 */
+    font-size: 14px;
+    outline: none;             /* 去掉点击时的蓝色发光框 */
+    transition: border-color 0.3s; /* 边框颜色变化的动画 */
+}
+
+/* 当输入框被点击（聚焦）时 */
+input[type="text"]:focus, 
+select:focus, 
+textarea:focus {
+    border-color: #5a527a; /* 边框变成紫色 */
+}
+
+/* 文本域特有样式 */
+textarea {
+    resize: vertical; /* 允许用户上下拉动调整高度，但不允许左右拉 */
+    line-height: 1.6; /* 行高，让文字不拥挤 */
+}
+
+/* 发布按钮 */
+.submit-btn {
+    width: 100%;
+    background-color: #5a527a; /* 紫色背景 */
+    color: white;
+    border: none;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    margin-top: 10px;
+}
+
+/* 鼠标悬停在按钮上时 */
+.submit-btn:hover {
+    background-color: #6b6191; /* 变亮一点 */
+}
+
+/* 按钮按下时 */
+.submit-btn:active {
+    transform: scale(0.98); /* 稍微缩小一点点，产生按压感 */
+}
