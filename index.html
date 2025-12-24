@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Dionysus Felicitas</title>
+    
+    <!-- === 外部样式库 === -->
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet" />
+    
+    <!-- === 本地样式表 === -->
+    <link rel="stylesheet" href="style.css" />
+    <!-- 圣诞限定皮肤 (节后删除这行即可) -->
+    <link rel="stylesheet" href="christmas2025/christmas.css" />
+
+  </head>
+
+  <body>
+    <!-- ==================== 顶部区域 ==================== -->
+    <header class="top-header">
+      <h1>Dionysus Felicitas</h1>
+    </header>
+
+    <!-- 命运投掷按钮 (挂在标题栏下方) -->
+    <div class="fate-trigger" onclick="openDicePanel()">
+      <i class="fas fa-dice-d20"></i>
+    </div>
+
+    <!-- ==================== 主内容容器 ==================== -->
+    <div id="main-container">
+      
+      <!-- 1. 酒馆页面 (默认显示) -->
+      <div id="page-tavern" class="page active">
+        <div class="tavern-bg">
+          <!-- 背景滚动区域 -->
+          <div id="scroll-content">
+            <img src="images/background.png" id="tavern-bg-img" alt="酒馆背景" />
+            
+          <!-- === 新增：喵喵彩蛋区域 === -->
+          <!-- 1. 隐形的点击触发区 -->
+          <div id="cat-trigger" onclick="showCatBubble()"></div>
+          <!-- 2. 弹出的小气泡 -->
+          <div id="cat-bubble">喵</div>
+            <!-- 角色小人 -->
+            <div class="character-small char-sheep" onclick="openCharacter('sheep')"></div>
+            <div class="character-small char-chu" onclick="openCharacter('chu')"></div>
+            <div class="character-small char-crow" onclick="openCharacter('crow')"></div>
+            <div class="character-small char-marten" onclick="openCharacter('marten')"></div>
+            <div class="character-small char-fox" onclick="openCharacter('fox')"></div>
+            <div class="character-small char-feng" onclick="openCharacter('feng')"></div>
+            <div class="character-small char-lizard" onclick="openCharacter('lizard')"></div>
+          </div>
+          
+          <!-- 左右滚动按钮 -->
+          <div class="scroll-btn left" onclick="scrollBackground('left')">
+            <i class="fas fa-chevron-left"></i>
+          </div>
+          <div class="scroll-btn right" onclick="scrollBackground('right')">
+            <i class="fas fa-chevron-right"></i>
+          </div>
+        </div>
+
+        <!-- 悬浮的唱片机 UI (已更新) -->
+        <div id="music-widget">
+          <!-- 唱片 (点击播放/暂停) -->
+          <div id="music-disc" onclick="toggleMusic()">
+            <img id="music-cover" src="images/sheep-small.png" alt="封面" />
+            <div class="disc-center"></div>
+          </div>
+          
+          <!-- 右侧小按钮组 -->
+          <div class="music-mini-controls">
+            <!-- 下一首 -->
+            <div class="mini-btn" onclick="nextTrack()">
+              <i class="fas fa-step-forward"></i>
+            </div>
+            <!-- 打开完整面板 -->
+            <div class="mini-btn" onclick="openMusicPanel()">
+              <i class="fas fa-list-ul"></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- === 新增：全功能音乐面板 (默认隐藏) === -->
+        <div id="music-panel-overlay" class="hidden" onclick="closeMusicPanel()">
+            <div class="music-panel" onclick="event.stopPropagation()">
+                <!-- 顶部：标题与关闭 -->
+                <div class="mp-header">
+                    <span><i class="fas fa-music"></i> 音乐播放器</span>
+                    <div class="mp-close" onclick="closeMusicPanel()"><i class="fas fa-times"></i></div>
+                </div>
+
+                <!-- 中部：当前播放信息 -->
+                <div class="mp-info">
+                    <h3 id="mp-title">Song Title</h3>
+                    <div class="mp-controls-row">
+                        <!-- 播放模式按钮：顺序/随机 -->
+                        <div class="mp-btn" id="btn-mode" onclick="togglePlayMode()" title="切换播放模式">
+                            <i class="fas fa-repeat"></i>
+                        </div>
+                        
+                        <!-- 上一首 -->
+                        <div class="mp-btn" onclick="prevTrack()">
+                            <i class="fas fa-step-backward"></i>
+                        </div>
+
+                        <!-- 播放/暂停 (大按钮) -->
+                        <div class="mp-btn big" id="btn-play-pause" onclick="toggleMusic()">
+                            <i class="fas fa-play"></i>
+                        </div>
+
+                        <!-- 下一首 -->
+                        <div class="mp-btn" onclick="nextTrack()">
+                            <i class="fas fa-step-forward"></i>
+                        </div>
+
+                        <!-- 只播收藏按钮 -->
+                        <div class="mp-btn" id="btn-fav-only" onclick="toggleFavOnly()" title="只播放收藏">
+                            <i class="far fa-heart"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 底部：播放列表 -->
+                <div class="mp-playlist-box">
+                    <ul id="mp-list">
+                        <!-- JS 会在这里自动生成歌曲列表 -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- 角色对话遮罩层 -->
+        <div id="overlay" class="overlay hidden" onclick="closeCharacter(event)">
+          <img class="character-big" id="big-char-img" src="" alt="角色立绘" />
+          
+          <!-- 对话框 (阻止冒泡防止误触关闭) -->
+          <div class="dialogue-box" onclick="nextDialogue(); event.stopPropagation();">
+            <p id="dialogue-text">你好呀！欢迎来到 Dionysus Felicitas！</p>
+          </div>
+          
+          <p class="close-hint">点击空白处关闭</p>
+        </div>
+      </div>
+
+      <!-- 2. 隙间巷页面 -->
+      <div id="page-alley" class="page">
+        <iframe src="alley/alley.html" class="content-frame"></iframe>
+      </div>
+
+      <!-- 3. 外出页面 -->
+      <div id="page-outing" class="page">
+        <h2>外出</h2>
+        <p>今天天气不错，要去哪里逛逛呢？</p>
+      </div>
+
+      <!-- 4. 画廊页面 -->
+      <div id="page-gallery" class="page">
+        <div class="gallery-header">
+          <h2>画廊</h2>
+          <div class="search-container">
+            <i class="fas fa-search"></i>
+            <input type="text" id="gallery-search" placeholder="搜索名称 / #tag / 作者" />
+          </div>
+        </div>
+        <div id="gallery-grid">
+          <!-- JS 动态生成内容 -->
+        </div>
+      </div>
+
+      <!-- 5. 游戏机页面 -->
+      <div id="page-game" class="page">
+        <div class="game-menu-header">
+          <h2>游戏卡带</h2>
+          <p>选择一款游戏插入主机...</p>
+        </div>
+
+        <div class="game-grid">
+          <!-- 贪吃蛇 -->
+          <div class="game-card" onclick="launchGame('snake')">
+            <div class="game-icon"><i class="fa-solid fa-apple-whole"></i></div>
+            <h3>贪吃蛇</h3>
+            <p>复古经典</p>
+          </div>
+
+          <!-- 酒庄经营 -->
+          <div class="game-card" onclick="launchGame('winery')">
+            <div class="game-icon"><i class="fas fa-wine-glass-alt"></i></div>
+            <h3>酒庄经营</h3>
+            <p>种植、收获与财富</p>
+          </div>
+
+          <!-- 小恐龙 -->
+          <div class="game-card" onclick="launchGame('dino')">
+            <div class="game-icon"><i class="fas fa-dragon"></i></div>
+            <h3>dino</h3>
+            <p>跳跃！</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- main-container 结束 -->
+
+    <!-- ==================== 底部导航栏 ==================== -->
+    <nav class="bottom-nav">
+      <div class="nav-item" onclick="switchTab('alley', this)">
+        <i class="fas fa-book-open"></i>
+        <span>隙间巷</span>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('outing', this)">
+        <i class="fas fa-map-signs"></i>
+        <span>外出</span>
+      </div>
+
+      <div class="nav-item active" onclick="switchTab('tavern', this)">
+        <i class="fas fa-dungeon"></i>
+        <span>酒馆</span>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('gallery', this)">
+        <i class="fas fa-image"></i>
+        <span>画廊</span>
+      </div>
+
+      <div class="nav-item" onclick="switchTab('game', this)">
+        <i class="fas fa-gamepad"></i>
+        <span>游戏机</span>
+      </div>
+    </nav>
+
+    <!-- ==================== 功能组件 (隐藏/弹窗) ==================== -->
+    
+    <!-- 音乐播放器核心 -->
+    <audio id="bgm-player"></audio>
+
+    <!-- 投骰子面板 -->
+    <div id="dice-overlay" class="hidden" onclick="closeDicePanel()">
+      <div class="dice-box" onclick="event.stopPropagation()">
+        <div class="dice-header">
+          <button class="jrrp-btn" onclick="rollJrrp()">
+            <i class="fas fa-star"></i> 今日人品 (JRRP)
+          </button>
+        </div>
+
+        <div class="dice-screen">
+          <div id="dice-formula-display">请选择骰子...</div>
+          <div id="dice-total-display"></div>
+        </div>
+
+        <div class="dice-keyboard">
+          <div class="keyboard-section">
+            <button onclick="addDice(4)">d4</button>
+            <button onclick="addDice(6)">d6</button>
+            <button onclick="addDice(8)">d8</button>
+            <button onclick="addDice(10)">d10</button>
+            <button onclick="addDice(12)">d12</button>
+            <button onclick="addDice(20)" class="key-d20">d20</button>
+            <button onclick="addDice(100)">d100</button>
+          </div>
+          <div class="keyboard-section modifiers">
+            <button onclick="addMod(1)">+1</button>
+            <button onclick="addMod(5)">+5</button>
+            <button onclick="addMod(-1)">-1</button>
+            <button onclick="addMod(-5)">-5</button>
+          </div>
+        </div>
+
+        <div class="dice-actions">
+          <button class="btn-clear" onclick="clearFormula()">清空</button>
+          <button class="btn-roll" onclick="rollAll()">投掷!</button>
+        </div>
+        <div class="dice-close-hint">点击外部区域关闭</div>
+      </div>
+    </div>
+
+    <!-- 图片查看器 -->
+    <div id="image-viewer" class="hidden" onclick="closeImageViewer()">
+      <div class="viewer-content" onclick="event.stopPropagation()">
+        <img id="viewer-image" src="" alt="画作详情" />
+        <div class="viewer-details">
+          <h3 id="viewer-name">作品名称</h3>
+          <div id="viewer-tags"></div>
+          <p id="viewer-author">作品作者</p>
+          <div class="viewer-meta">
+            <span id="viewer-platform"><i class="fas fa-globe"></i> 平台</span>
+            <span class="separator">|</span>
+            <span id="viewer-date"><i class="far fa-calendar-alt"></i> 时间</span>
+          </div>
+        </div>
+        <div class="viewer-close-btn" onclick="closeImageViewer()">
+          <i class="fas fa-times"></i>
+        </div>
+      </div>
+    </div>
+
+    <!-- 全屏游戏运行容器 -->
+    <div id="fullscreen-game-overlay" class="hidden">
+      <!-- 如果需要关闭按钮，请取消下方的注释 -->
+      <!-- 
+      <div class="close-game-btn" onclick="closeGame()">
+          <i class="fas fa-times"></i> 退出游戏
+      </div> 
+      -->
+      <iframe id="fullscreen-game-frame" src="" frameborder="0"></iframe>
+    </div>
+
+    <!-- ==================== 脚本引入 ==================== -->
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+    <!-- 圣诞限定功能 (节后删除这行即可) -->
+    <script src="christmas2025/christmas.js"></script>
+  
+  </body>
+</html>

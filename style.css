@@ -1,0 +1,861 @@
+/* =========================================
+   === 1. 全局变量与基础设置 (Global) ===
+   ========================================= */
+:root {
+    /* --- 调色板 --- */
+    --bg-dark: #4a3f35;       /* 主背景深棕色 */
+    --bg-darker: #3c322a;     /* 标题栏/导航栏背景 */
+    --bg-panel: #2c241e;      /* 面板/卡片背景 */
+    --bg-overlay: rgba(46, 38, 30, 0.85); /* 遮罩层半透明 */
+    
+    --text-main: #d7c8b8;     /* 主要文字米色 */
+    --text-dim: #95a5a6;      /* 次要文字灰色 */
+    --accent-gold: #e6a23c;   /* 强调色：金色 */
+    --border-color: #8a7a68;  /* 边框颜色 */
+    
+    /* --- 层级管理 (Z-Index) --- */
+    --z-bg: 1;
+    --z-content: 10;
+    --z-nav: 500;
+    --z-float-btn: 900;       /* 悬浮按钮 */
+    --z-overlay: 1000;        /* 遮罩层 */
+    --z-modal: 2000;          /* 弹窗 */
+    --z-fullscreen: 3000;     /* 全屏游戏 */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* 禁止移动端点击高亮背景 */
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: "Noto Serif SC", "Microsoft YaHei", sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    overflow: hidden; /* 禁止整个页面滚动 */
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 强制占满屏幕高度 */
+}
+
+/* === 全局滚动条美化 (Webkit) === */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(138, 122, 104, 0.5); 
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-gold); 
+}
+
+/* =========================================
+   === 2. 布局框架 (Layout) ===
+   ========================================= */
+
+/* 顶部标题栏 */
+.top-header {
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: var(--bg-darker);
+    color: var(--text-main);
+    font-size: 16px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 2100; 
+}
+
+/* 主内容容器 */
+#main-container {
+    flex: 1; /* 占据剩余空间 */
+    position: relative;
+    overflow: hidden;
+}
+
+/* 页面通用样式 */
+.page {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none; /* 默认隐藏 */
+    overflow-y: auto; /* 允许内部滚动 */
+    padding-bottom: 0px; /* 防止内容被底部导航栏遮挡 */
+}
+
+.page.active {
+    display: block;
+}
+
+/* 底部导航栏 */
+.bottom-nav {
+    height: 60px;
+    background-color: var(--bg-darker);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-top: 1px solid #34495e;
+    z-index: var(--z-nav);
+    flex-shrink: 0;
+}
+
+.nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    color: var(--text-dim);
+    font-size: 12px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.nav-item i {
+    font-size: 20px;
+    margin-bottom: 5px;
+}
+
+.nav-item.active {
+    color: var(--accent-gold);
+}
+
+/* 通用 iframe 样式 */
+.content-frame {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+/* =========================================
+   === 3. 酒馆页面 (Tavern) ===
+   ========================================= */
+#page-tavern {
+    padding: 20px;
+    overflow: hidden; /* 酒馆页面不需要滚动条，因为是横向滚动的 */
+}
+
+.tavern-bg {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+}
+
+/* 横向滚动容器 */
+#scroll-content {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    white-space: nowrap; 
+    transition: transform 0.5s ease-in-out;
+}
+
+#tavern-bg-img {
+    height: 100%;
+    width: auto;
+    vertical-align: top;
+}
+
+/* 背景滚动按钮 */
+.scroll-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 40px;
+    height: 40px;
+    background-color: rgba(0, 0, 0, 0.4);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 51;
+    font-size: 20px;
+    transition: background-color 0.2s;
+}
+.scroll-btn:hover { background-color: rgba(0,0,0,0.7); }
+.scroll-btn.left { left: 10px; }
+.scroll-btn.right { right: 10px; }
+
+/* --- 角色小立绘 (Small Characters) --- */
+.character-small {
+    position: absolute;
+    cursor: pointer;
+    background-size: contain; 
+    background-position: center bottom;
+    background-repeat: no-repeat;
+    height: auto; 
+    filter: drop-shadow(0 4px 5px rgba(0,0,0,0.5));
+    transition: transform 0.2s ease-out, filter 0.2s ease-out; 
+    user-select: none; 
+    -webkit-user-drag: none;
+    /*border: 2px solid red;*/ 
+}
+
+.character-small:hover {
+    transform: scale(1.1);
+    filter: drop-shadow(0 6px 12px rgba(0,0,0,0.6));
+}
+
+/* 各个角色的位置配置 */
+.char-sheep { background-image: url('images/sheep-small.png'); left: 27%; bottom: 42%; width: 43%; aspect-ratio: 200/185; z-index: 1;clip-path: inset(0% 25% 0% 25%); }
+.char-chu   { background-image: url('images/chu-small.png');   left: 62%; bottom: 17%; width: 44%; aspect-ratio: 200/185; z-index: 2; clip-path: inset(8% 18% 5% 33%);}
+.char-crow  { background-image: url('images/crow-small.png');  left: -2%; bottom: 13%; width: 40%; aspect-ratio: 200/185; z-index: 2; clip-path: inset(0% 25% 0% 25%);}
+.char-marten{ background-image: url('images/marten-small.png');left: 32%; bottom: 12%; width: 43%; aspect-ratio: 200/185; z-index: 2;clip-path: inset(9% 25% 7% 20%); }
+.char-fox   { background-image: url('images/fox-small.png');   left: 5%;  bottom: 41%; width: 41%; aspect-ratio: 200/185; z-index: 1; clip-path: inset(0% 25% 0% 25%);}
+.char-feng  { background-image: url('images/feng-small.png');  left: 43%; bottom: 17%; width: 54%; aspect-ratio: 200/185; z-index: 1; clip-path: inset(0% 25% 0% 25%);}
+.char-lizard{ background-image: url('images/lizard-small.png');left: 68%; bottom: 42%; width: 40%; aspect-ratio: 200/185; z-index: 1; clip-path: inset(0% 22% 0% 20%);}
+
+/* =========================================
+   === 4. 对话与遮罩系统 (Dialogue System) ===
+   ========================================= */
+.overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-overlay);
+    z-index: var(--z-overlay);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    box-sizing: border-box;
+}
+
+/* 装饰性边框 */
+.overlay::after {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 100%;
+    box-sizing: border-box;
+    border: 15px solid #1a1510; 
+    box-shadow: inset 0 0 0 2px var(--border-color), inset 0 0 50px rgba(0,0,0,0.8);
+    z-index: 1002; 
+    pointer-events: none; /* 允许点击穿透 */
+}
+
+.overlay.hidden { display: none; }
+
+/* 大立绘 */
+.character-big {
+    height: 100vh !important;
+    width: auto !important;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    object-fit: contain;
+    z-index: 1001;
+    display: block;
+    transition: bottom 0.3s ease;
+}
+
+/* 对话框 */
+.dialogue-box {
+    width: 91%;
+    max-width: 700px;
+    min-height: 35%;
+    background-color: rgba(44, 36, 29, 0.95);
+    color: var(--text-main);
+    font-size: 18px;
+    padding: 25px;
+    border-top: 3px solid var(--border-color);
+    border-radius: 15px 15px 0 0;
+    position: relative;
+    z-index: 1003;
+    cursor: pointer;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+.close-hint {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 12px;
+    z-index: 1003;
+}
+
+/* =========================================
+   === 5. 画廊页面 (Gallery) ===
+   ========================================= */
+#page-gallery {
+    padding: 20px;
+}
+
+#page-gallery.active {
+    display: flex;
+    flex-direction: column;
+}
+
+.gallery-header {
+    margin-bottom: 20px;
+    flex-shrink: 0;
+}
+.gallery-header h2 {
+    text-align: center;
+    margin-bottom: 10px;
+    color: var(--text-main);
+}
+
+.search-container { position: relative; }
+.search-container .fa-search {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-dim);
+}
+
+#gallery-search {
+    width: 100%;
+    height: 40px;
+    padding: 0 15px 0 40px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-size: 16px;
+}
+
+#gallery-grid {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    padding-bottom: 20px;
+    align-content: start;
+}
+
+.gallery-thumbnail {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+.gallery-thumbnail:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+}
+.gallery-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* =========================================
+   === 6. 游戏机页面 (Game Console) ===
+   ========================================= */
+#page-game {
+    flex-direction: column;
+    gap: 20px;
+    padding: 15px;
+}
+#page-game.active { display: flex; }
+
+.game-menu-header {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 20px;
+    padding: 0 10px;
+}
+
+.game-card {
+    background-color: var(--bg-panel);
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+.game-card:hover {
+    transform: translateY(-5px);
+    background-color: var(--bg-darker);
+    border-color: var(--accent-gold);
+}
+.game-icon {
+    font-size: 40px;
+    color: var(--accent-gold);
+    margin-bottom: 10px;
+}
+.game-card h3 { font-size: 18px; margin-bottom: 5px; color: var(--text-main); }
+.game-card p { font-size: 12px; color: var(--text-dim); }
+
+/* =========================================
+   === 7. 功能组件 (Widgets & Modals) ===
+   ========================================= */
+
+/* --- 唱片机挂件 --- */
+#music-widget {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: var(--z-float-btn);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#music-disc {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    border: 2px solid var(--text-main);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.5);
+    transition: transform 0.2s;
+}
+#music-disc:active { transform: scale(0.95); }
+
+#music-cover { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+.disc-center {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 12px; height: 12px;
+    background-color: var(--bg-panel);
+    border: 2px solid var(--text-main);
+    border-radius: 50%;
+    z-index: 2;
+}
+
+#music-control-next {
+    width: 30px; height: 30px;
+    background-color: rgba(44, 36, 29, 0.9);
+    color: var(--text-main);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    font-size: 12px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+#music-control-next:hover { background-color: var(--accent-gold); color: var(--bg-panel); }
+
+@keyframes rotate-disc { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.rotating { animation: rotate-disc 5s linear infinite; }
+.paused { animation-play-state: paused; }
+
+/* --- 命运投掷 (骰子) --- */
+.fate-trigger {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px; height: 30px;
+    background-color: var(--bg-darker);
+    border-radius: 0 0 30px 30px;
+    display: flex; justify-content: center; align-items: center;
+    color: var(--accent-gold);
+    font-size: 18px;
+    cursor: pointer;
+    z-index: var(--z-float-btn);
+    box-shadow: 0 4px 5px rgba(0,0,0,0.3);
+    transition: all 0.2s;
+}
+.fate-trigger:hover { height: 38px; padding-top: 5px; color: #fff; }
+
+/* 迷你模式 */
+.fate-trigger.mini {
+    top: 42px;
+    transform: translateX(-50%) scale(0.7);
+    opacity: 0.4;
+}
+.fate-trigger.mini:hover {
+    top: 50px;
+    transform: translateX(-50%) scale(1);
+    opacity: 1;
+}
+
+/* 骰子面板 */
+#dice-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: var(--z-modal);
+    display: flex; justify-content: center; align-items: center;
+}
+#dice-overlay.hidden { display: none; }
+
+.dice-box {
+    width: 340px;
+    background-color: var(--bg-panel);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid var(--border-color);
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0,0,0,0.8);
+    animation: popIn 0.3s ease-out;
+}
+@keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+.dice-header { margin-bottom: 15px; border-bottom: 1px solid var(--bg-dark); padding-bottom: 10px; }
+.jrrp-btn {
+    background: linear-gradient(45deg, var(--accent-gold), #d35400);
+    border: none; color: white; padding: 6px 20px; border-radius: 20px;
+    cursor: pointer; font-weight: bold;
+}
+.jrrp-btn:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+.dice-screen {
+    background-color: #1a1a1a;
+    border: 1px solid #5e5044;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    min-height: 90px;
+}
+#dice-formula-display { color: var(--text-dim); font-size: 14px; word-break: break-all; }
+#dice-total-display { color: var(--accent-gold); font-size: 28px; font-weight: bold; margin-top: 8px; font-family: 'Courier New', monospace; }
+
+.dice-keyboard { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.keyboard-section { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+.dice-keyboard button {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    border: 1px solid #5e5044;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+.dice-keyboard button:hover { background-color: #6a5a4a; }
+.key-d20 { border-color: var(--accent-gold) !important; color: var(--accent-gold) !important; font-weight: bold; }
+
+.dice-actions { display: flex; gap: 15px; }
+.dice-actions button { flex: 1; padding: 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: bold; }
+.btn-clear { background-color: #5e5044; color: var(--text-main); }
+.btn-roll { background-color: var(--accent-gold); color: var(--bg-panel); }
+
+/* --- 图片查看器 (Image Viewer) --- */
+#image-viewer {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: var(--z-modal);
+    display: flex; justify-content: center; align-items: center;
+    padding: 20px;
+}
+#image-viewer.hidden { display: none; }
+
+.viewer-content {
+    position: relative;
+    max-width: 90vw; max-height: 90vh;
+    display: flex; flex-direction: column;
+    background-color: var(--bg-panel);
+    border-radius: 10px;
+    box-shadow: 0 0 30px rgba(0,0,0,0.5);
+    overflow-y: auto;
+}
+
+#viewer-image { max-width: 100%; object-fit: contain; border-radius: 10px 10px 0 0; }
+.viewer-details { padding: 15px 20px; color: var(--text-main); text-align: center; }
+#viewer-name { font-size: 22px; margin-bottom: 10px; }
+#viewer-tags span {
+    display: inline-block;
+    background-color: var(--bg-dark);
+    padding: 3px 10px;
+    border-radius: 15px;
+    margin: 3px;
+    font-size: 14px;
+    cursor: pointer;
+}
+#viewer-tags span:hover { background-color: #6a5a4a; }
+.viewer-meta { margin-top: 15px; font-size: 13px; color: var(--text-dim); display: flex; justify-content: center; gap: 10px; }
+.viewer-meta i { color: var(--accent-gold); margin-right: 5px; }
+
+.viewer-close-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 35px; height: 35px;
+    background-color: rgba(230, 162, 60, 0.9);
+    color: var(--bg-panel);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* --- 全屏游戏容器 --- */
+#fullscreen-game-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: #000;
+    z-index: var(--z-fullscreen);
+    display: flex; flex-direction: column;
+}
+#fullscreen-game-overlay.hidden { display: none; }
+#fullscreen-game-frame { width: 100%; height: 100%; flex: 1; }
+
+.close-game-btn {
+    position: absolute;
+    top: 8%; right: 5%;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    z-index: 3001;
+    backdrop-filter: blur(5px);
+}
+.close-game-btn:hover { background-color: rgba(231, 76, 60, 0.8); }
+/* =========================================
+   === 8. 新版音乐播放器样式 (Music Player Update) ===
+   ========================================= */
+
+/* 更新悬浮挂件布局 */
+#music-widget {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    z-index: var(--z-float-btn);
+    display: flex;
+    align-items: center;
+    gap: 15px; /* 唱片和按钮组的间距 */
+}
+
+/* 右侧小按钮组容器 */
+.music-mini-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 小圆按钮通用样式 */
+.mini-btn {
+    width: 35px; height: 35px;
+    background-color: rgba(44, 36, 29, 0.9);
+    color: var(--text-main);
+    border-radius: 50%;
+    display: flex; justify-content: center; align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    transition: all 0.2s;
+}
+.mini-btn:hover {
+    background-color: var(--accent-gold);
+    color: var(--bg-panel);
+    transform: scale(1.1);
+}
+
+/* --- 音乐面板弹窗 --- */
+#music-panel-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* 背景变暗 */
+    z-index: var(--z-modal);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px); /* 背景模糊 */
+}
+#music-panel-overlay.hidden { display: none; }
+
+.music-panel {
+    width: 320px;
+    height: 450px;
+    background-color: var(--bg-panel);
+    border: 2px solid var(--border-color);
+    border-radius: 15px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+/* 面板顶部 */
+.mp-header {
+    height: 50px;
+    background-color: var(--bg-darker);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    font-weight: bold;
+    border-bottom: 1px solid var(--border-color);
+}
+.mp-close { cursor: pointer; padding: 5px; }
+.mp-close:hover { color: var(--accent-gold); }
+
+/* 面板中部控制区 */
+.mp-info {
+    padding: 15px;
+    text-align: center;
+    background: linear-gradient(to bottom, var(--bg-darker), var(--bg-panel));
+}
+#mp-title {
+    font-size: 16px;
+    margin-bottom: 15px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--accent-gold);
+}
+
+.mp-controls-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 10px;
+}
+
+.mp-btn {
+    cursor: pointer;
+    color: var(--text-dim);
+    font-size: 18px;
+    transition: color 0.2s;
+}
+.mp-btn:hover { color: var(--text-main); }
+.mp-btn.active { color: var(--accent-gold); text-shadow: 0 0 5px rgba(230, 162, 60, 0.5); }
+
+.mp-btn.big {
+    width: 50px; height: 50px;
+    border-radius: 50%;
+    background-color: var(--accent-gold);
+    color: var(--bg-panel);
+    display: flex; justify-content: center; align-items: center;
+    font-size: 20px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+.mp-btn.big:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+/* 面板底部列表 */
+.mp-playlist-box {
+    flex: 1;
+    overflow-y: auto;
+    background-color: rgba(0,0,0,0.2);
+}
+#mp-list {
+    list-style: none;
+    padding: 0;
+}
+.mp-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    cursor: pointer;
+    transition: background 0.2s;
+    font-size: 14px;
+}
+.mp-item:hover { background-color: rgba(255,255,255,0.05); }
+.mp-item.playing { color: var(--accent-gold); font-weight: bold; }
+.mp-item.playing::before {
+    content: "\f001"; /* FontAwesome 音乐图标 */
+    font-family: "Font Awesome 6 Free";
+    margin-right: 5px;
+}
+
+.mp-fav-btn {
+    padding: 5px;
+    color: #555;
+}
+.mp-fav-btn:hover { color: #888; }
+.mp-fav-btn.is-fav { color: #e74c3c; } /* 红色爱心 */
+
+/* === 喵喵彩蛋样式 === */
+
+/* 1. 点击触发区 */
+#cat-trigger {
+    position: absolute;
+    /* 下面这两个数值决定了点击区域的位置，请根据背景图调整 */
+    left: 7%;  /* 距离左边的距离 */
+    top: 21%;   /* 距离顶部的距离 */
+    
+    /* 点击区域的大小 */
+    width: 60px;
+    height: 60px;
+    
+    cursor: pointer; /* 鼠标放上去变小手 */
+    z-index: 5;      /* 确保在背景图上面 */
+    
+    /* 调试用：如果你找不到位置，把下面这行取消注释，就能看到红框了 */
+     /*background-color: rgba(255, 0, 0, 0.5); */
+}
+
+/* 2. 气泡框 */
+#cat-bubble {
+    position: absolute;
+    /* 气泡的位置，通常比触发区稍微高一点 */
+    left: 7%; 
+    top: 11%;
+    
+    background-color: white;
+    border: 2px solid #333;
+    border-radius: 15px; /* 圆角 */
+    padding: 5px 12px;
+    font-size: 14px;
+    font-weight: bold;
+    color: #333;
+    
+    /* 默认隐藏 */
+    opacity: 0;
+    transform: scale(0.8); /* 稍微缩小一点 */
+    pointer-events: none;  /* 让气泡不挡鼠标点击 */
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* 弹跳动画效果 */
+    z-index: 6;
+}
+
+/* 气泡显示时的状态 */
+#cat-bubble.show {
+    opacity: 1;
+    transform: scale(1);
+    top: 10%; /* 稍微往上浮动一点的效果 */
+}
+
+/* 给气泡加一个小尾巴（可选） */
+#cat-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 6px 6px 0;
+    border-style: solid;
+    border-color: #333 transparent transparent transparent;
+}

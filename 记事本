@@ -1,0 +1,100 @@
+// 更新画廊：cmd打开node generate_gallery.js
+//12.18修改：
+//1.隙间巷版面更新2.网站底部导航栏和浏览器冲突修复
+//3.后端测试4.角色添加完毕
+//问题：dino在手机上点触运行会卡/数据库建设放缓
+//generate_gallery不用上传包括_source_gallery
+
+12.20
+1.排行榜：game-snake-index文件更新
+问题1：后端忘记处理这个“询问请求总之就是后端没搞完
+2.酒馆-data/index文件更新
+3.alley-js-alleydata
+4.解决搜索栏问题：
+alley.html/alley.script/alley.html/alley.style.css
+5.求助版更新alley.users/interactive两个文件全新
+post.html
+苏账号注册（这是啥
+
+12.23
+总之需要更新的文件：
+alleydata.js/post.script.js/alley.html/alley.users.js
+interactive两个文件全新/messages.data/message.script
+post.html/alley.style.css/alley.script.js/
+data.js/index.html/style.css/script.js/index.html
+三个游戏的所有文件包括图片你要看有一些新增图片（）
+说实在话基本上所有的文件我都动了一下除了画廊，甚至音乐的名字我也改了
+嗯对大更新。
+
+12,23
+酒庄升级：
+1.新手教学引导
+2。随机事件
+3.水分控制和季节
+4.出售陈年酒的价格不对
+
+12.22
+目录结构
+酒馆-
+酒馆/        
+├─ alley/                  
+│  ├─ CSS/                
+│  │  ├─ alley.style.css
+│  │  ├─ messages.style.css
+│  │  ├─ new-post.style.css
+│  │  ├─ post.style.css
+│  │  └─ profile.style.css
+│  ├─ js/                  
+│  │  ├─ alley.data.js
+│  │  ├─ alley.script.js
+│  │  ├─ alley.users.js
+│  │  ├─ interactive.data.js
+│  │  ├─ interactive.script.js
+│  │  ├─ messages.data.js
+│  │  ├─ messages.script.js
+│  │  ├─ new-post.script.js
+│  │  ├─ post.script.js
+│  │  └─ profile.script.js
+│  ├─ alley.html
+│  ├─ messages.html
+│  ├─ new-post.html
+│  ├─ post.html
+│  └─ profile.html
+|  ├─ assets/                 
+|  │  ├─ avatar_admin.png
+│  |  ├─ avatar_collector.png
+│  |  ├─ avatar_null.png
+│  |  ├─ avatar_squirrel.png
+|  |  └─ logs/                  
+├─ games/                                 
+│  ├─ dino/                
+│  │  ├─ imgs/            
+│  │  ├─ coin.js         
+│  │  ├─ dino.js           
+│  │  ├─ ground.js         
+│  │  ├─ obstacle.js      
+│  │  ├─ script.js        
+│  │  ├─ skins.js         
+│  │  ├─ index.html       
+│  │  └─ style.css        
+│  ├─snake/              
+│  |  └─ index.html       
+|  └─ winery/                 
+│  |  ├─ js/                  
+│  │  |  ├─ data.js           
+│  │  |  ├─ main.js           
+│  │  |  ├─ state.js        
+│  │  |  └─ ui.js
+|  |  ├─ index.html          
+│  |  └─ style.css             
+├─ images/              
+│  └─ gallery/          
+├─ music/              
+│  ├─ Mariah Carey《All 1.
+│  └─ Wham! 《Last Christ..
+├─ 记事本/                
+├─ data.js             
+├─ generate_gallery.js 
+├─ index.html           
+├─ script.js           
+└─ style.css           
