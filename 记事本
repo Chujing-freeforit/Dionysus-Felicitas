@@ -1,6 +1,0 @@
-// 更新画廊：cmd打开node generate_gallery.js
-//12.18修改：
-//1.隙间巷版面更新2.网站底部导航栏和浏览器冲突修复
-//3.后端测试4.角色添加完毕
-//问题：dino在手机上点触运行会卡/数据库建设放缓
-//generate_gallery不用上传包括_source_gallery
