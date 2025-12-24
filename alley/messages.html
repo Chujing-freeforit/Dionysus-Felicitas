@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>消息中心 - 隙间巷</title>
+    
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <!-- 引入全局样式 -->
+    <link rel="stylesheet" href="css/alley.style.css">
+    <!-- 引入消息页面的专用样式 (下一步我们会创建它) -->
+    <link rel="stylesheet" href="css/messages.style.css">
+</head>
+<body>
+
+    <!-- 模块一：头部 -->
+    <div class="bbs-header">
+        <div class="bbs-title">消息中心</div>
+        <div class="bbs-subtitle">聆听来自隙间的低语</div>
+    </div>
+
+    <!-- 模块二：消息分类标签 -->
+    <div class="bbs-tags message-filters">
+        <span class="tag active" data-filter="all">全部</span>
+        <span class="divider">｜</span>
+        <span class="tag" data-filter="reply">回复我的</span>
+        <span class="divider">｜</span>
+        <span class="tag" data-filter="mention">@我</span>
+        <span class="divider">｜</span>
+        <span class="tag" data-filter="system">系统通知</span>
+    </div>
+
+    <!-- 模块三：消息列表容器 (等待JS填充) -->
+    <div id="message-list-container">
+        <!-- 消息将由 JS 动态加载到这里 -->
+    </div>
+
+    <!-- 模块四：底部菜单 -->
+     <div class="bbs-footer-menu">
+        <div class="menu-item" onclick="window.location.href='alley.html'">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-folder"></i>
+            <span>版块</span>
+        </div>
+        <div class="menu-item" onclick="window.location.href='new-post.html'">
+            <i class="fas fa-plus"></i>
+            <span>发帖</span>
+        </div>
+        <div class="menu-item highlight" onclick="window.location.href='messages.html'">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="menu-item" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+
+    <!-- 引入脚本 -->
+    <script src="js/alley.users.js"></script>
+    <script src="js/messages.data.js"></script>
+    <script src="js/messages.script.js"></script> <!-- 下下一步我们会创建它 -->
+
+</body>
+</html>

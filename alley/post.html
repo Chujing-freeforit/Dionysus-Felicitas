@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>帖子详情 - 隙间巷</title>
+    <link rel="stylesheet" href="css/alley.style.css"> 
+<link rel="stylesheet" href="css/post.style.css">
+</head>
+<body>
+
+    <div class="post-detail-container">
+        <!-- 模块一：返回按钮 -->
+        <div class="back-button-wrapper">
+            <!-- onclick="history.back()" 是一个简单的JS命令，作用是“返回上一个页面” -->
+            <a href="#" onclick="history.back(); return false;" class="back-button">&lt; 返回列表</a>
+        </div>
+
+        <!-- 模块二：主楼内容容器 (等待JS填充) -->
+        <div id="main-post-content">
+            <!-- 这里会由JS动态加载主楼内容 -->
+        </div>
+
+        <!-- 模块三：回复列表容器 (等待JS填充) -->
+        <div id="replies-container">
+            <!-- 这里会由JS动态加载回复内容 -->
+        </div>
+    </div>
+
+        <!-- post.html 的底部菜单 -->
+    <div class="bbs-footer-menu">
+        <div class="menu-item" onclick="window.location.href='alley.html'">
+            <i class="fas fa-home"></i>
+            <span>首页</span>
+        </div>
+        <div class="menu-item">
+            <i class="fas fa-folder"></i>
+            <span>版块</span>
+        </div>
+        <div class="menu-item" onclick="window.location.href='new-post.html'">
+            <i class="fas fa-plus"></i>
+            <span>发帖</span>
+        </div>
+        <div class="menu-item" onclick="window.location.href='messages.html'">
+            <i class="fas fa-comment-dots"></i>
+            <span>消息</span>
+        </div>
+        <div class="menu-item" onclick="window.location.href='profile.html'">
+            <i class="fas fa-user"></i>
+            <span>我的</span>
+        </div>
+    </div>
+
+    <script src="js/alley.users.js"></script>
+    <script src="js/alley.data.js"></script>
+    <script src="js/interactive.data.js"></script>
+    <script src="js/interactive.script.js"></script>
+    <script src="js/post.script.js"></script>
+
+</body>
+</html>
