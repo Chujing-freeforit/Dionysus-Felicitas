@@ -1,0 +1,484 @@
+/* games/dino/style.css (V3.0 - 最终完美适配版) */
+
+/* === 全局与字体 === */
+* {
+    box-sizing: border-box;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: none; /* 禁止默认触摸行为 */
+}
+
+body {
+    margin: 0;
+    background-color: #2c241e;
+    font-family: 'Courier New', monospace, sans-serif;
+    overflow: hidden;
+    
+    /* 【关键优化】适配手机浏览器动态地址栏 */
+    height: 100vh;
+    height: 100dvh; 
+    width: 100vw;
+    
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+    /* 【关键优化】避开刘海屏和底部小黑条 */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    padding-bottom: env(safe-area-inset-bottom);
+    
+    overscroll-behavior: none; /* 禁止橡皮筋回弹 */
+}
+
+/* === 掌机外壳 === */
+.game-console {
+    background-color: #c0c0c0;
+    
+    /* 【优化】留出边距，防止贴边 */
+    width: 96vw; 
+    
+    /* 【优化】高度自适应，防止被地址栏遮挡 */
+    height: 90dvh; 
+    
+    /* 保持宽扁比例，防止在iPad等设备上变形 */
+    max-height: 45vw; 
+    max-width: 1200px; 
+    
+    border-radius: 15px; 
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.5), 0 10px 20px rgba(0,0,0,0.4);
+    border: 2px solid #a0a0a0;
+    display: flex;
+    align-items: center;
+    padding: 10px; 
+    gap: 10px; 
+    
+    /* 确保居中 */
+    margin: auto;
+}
+
+/* === 中间屏幕区域 === */
+.console-screen-bezel {
+    flex: 1; 
+    height: 100%;
+    background-color: #4a3f35;
+    border-radius: 8px;
+    padding: 10px; 
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.7);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+}
+
+.brand-logo {
+    color: #95a5a6;
+    font-size: 12px; 
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 5px;
+    letter-spacing: 2px;
+    flex-shrink: 0;
+}
+
+.power-indicator {
+    position: absolute;
+    top: 12px;
+    left: 15px;
+    width: 6px;
+    height: 6px;
+    background-color: #e74c3c;
+    border-radius: 50%;
+    box-shadow: 0 0 5px #e74c3c;
+}
+
+/* === 游戏核心画面 (World) === */
+.world {
+    width: 100% !important;
+    height: 100% !important;
+    flex: 1;
+    overflow: hidden;
+    position: relative;
+    background-color: #f7f7f7;
+    border: 2px solid #2c241e;
+}
+
+/* === 左右控制区 === */
+.console-controls {
+    width: 12%; 
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; 
+    align-items: center;
+    gap: 20px;
+}
+
+.d-pad { display: grid; grid-template-columns: 25px 25px 25px; grid-template-rows: 25px 25px 25px; position: relative; transform: scale(0.9); }
+.d-pad::before { content: ''; position: absolute; width: 12px; height: 12px; background: #3d3d3d; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: inset 0 0 5px rgba(0,0,0,0.5); }
+.d-btn { background-color: #555; box-shadow: 0 2px 0 #333; }
+.d-up { grid-column: 2; grid-row: 1; border-radius: 4px 4px 0 0; }
+.d-left { grid-column: 1; grid-row: 2; border-radius: 4px 0 0 4px; }
+.d-down { grid-column: 2; grid-row: 3; border-radius: 0 0 4px 4px; }
+.d-right { grid-column: 3; grid-row: 2; border-radius: 0 4px 4px 0; }
+
+.action-pad { text-align: center; }
+.action-btn { width: 55px; height: 55px; background-color: #c0392b; border-radius: 50%; border: 2px solid #922b21; box-shadow: 0 4px 0 #641e16; display: flex; justify-content: center; align-items: center; font-size: 20px; color: white; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s; }
+.action-btn:active { transform: translateY(4px); box-shadow: none; }
+.action-label { margin-top: 5px; display: block; color: #555; font-weight: bold; font-size: 10px; }
+
+.extra-buttons { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; justify-content: center; }
+.select-btn, .start-btn { width: 40px; height: 16px; background: #555; border-radius: 8px; color: #c0c0c0; font-size: 8px; line-height: 16px; text-align: center; font-weight: bold; }
+
+/* === 游戏内UI (HUD) === */
+.hud { 
+    position: absolute; 
+    /* 【优化】增加边距，避开圆角和刘海 */
+    top: 2vmin; 
+    right: 2vmin; 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    z-index: 5; 
+    background: rgba(255, 255, 255, 0.5); 
+    padding: 5px 10px; 
+    border-radius: 8px; 
+}
+.coin-counter { display: flex; align-items: center; font-weight: bold; font-size: 3vmin; color: #e67e22; }
+.coin-icon { width: 3vmin; height: 3vmin; margin-right: 5px; }
+.distance-score { font-size: 3vmin; color: #555; font-weight: bold; }
+
+/* === 菜单与弹窗 (全屏覆盖) === */
+.menu-screen, .skin-selection-screen, .rank-screen, .game-over-screen {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    
+    /* 【关键优化】全屏弹窗内容避开安全区 */
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+    
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    gap: 10px;
+}
+
+.menu-screen { background-color: rgba(247, 247, 247, 0.98); z-index: 10; }
+.skin-selection-screen { background-color: rgba(247, 247, 247, 0.98); z-index: 10; }
+
+/* === 换肤界面 === */
+.skin-selection-screen h2 { 
+    font-size: 3vmin; color: #555; margin: 5px 0; 
+}
+
+.skin-layout {
+    display: flex;
+    width: 90%;
+    height: 65%;
+    background: #fff;
+    border: 2px solid #dcdcdc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+/* 左侧导航栏 */
+.skin-sidebar {
+    width: 30%;
+    background-color: #f0f0f0;
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    padding: 1.5vmin;
+    font-size: 1.8vmin;
+    color: #666;
+    cursor: pointer;
+    border-bottom: 1px solid #e0e0e0;
+    transition: background 0.2s;
+    font-weight: bold;
+    text-align: center;
+}
+
+.nav-item:hover { background-color: #e8e8e8; }
+.nav-item.active {
+    background-color: #fff;
+    color: #e6a23c;
+    border-left: 4px solid #e6a23c;
+}
+
+/* 右侧内容区 */
+.skin-content {
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;
+    background-color: #fff;
+}
+
+/* 网格布局显示皮肤 */
+.skin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* 自动适应列数 */
+    gap: 10px;
+}
+
+.skin-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 8px;
+    border: 2px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: #f9f9f9;
+}
+
+.skin-item:hover { transform: translateY(-2px); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+.skin-item.selected { 
+    border-color: #e6a23c; 
+    background-color: #fff8e6; 
+}
+
+.skin-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+    margin-bottom: 5px;
+}
+
+.skin-item span {
+    font-size: 1.5vmin;
+    color: #555;
+    text-align: center;
+    word-break: break-all;
+}
+
+/* === 通用按钮样式 === */
+.menu-screen button, .skin-selection-screen .back-btn, .game-over-screen button, .rank-screen .back-btn {
+    font-size: 2.2vmin; padding: 1.2vmin 2.5vmin; border-radius: 1vmin;
+    min-width: 100px;
+    text-align: center; cursor: pointer;
+    transition: all 0.2s; font-family: 'Courier New', monospace;
+    background-color: #e6a23c; color: #2c241e; border: 2px solid #fff;
+    box-shadow: 0 3px 0 #b37e2e;
+}
+.menu-screen button:active, .skin-selection-screen .back-btn:active, .game-over-screen button:active, .rank-screen .back-btn:active { 
+    transform: translateY(3px); box-shadow: none; 
+}
+.exit-btn { background-color: #95a5a6 !important; box-shadow: 0 3px 0 #5e6a6b !important; }
+
+/* === 背景层 (视差滚动) === */
+.background-layer {
+    --left: 0;
+    position: absolute;
+    top: 0; 
+    left: calc(var(--left) * 1%);
+    width: 100.5%; 
+    height: 100%;
+    background-repeat: no-repeat;
+    background-size: cover; 
+    background-position: center bottom;
+    z-index: 0; 
+}
+
+/* === 地面层 === */
+.ground-container { 
+    --left: 0;
+    position: absolute; 
+    bottom: 0; 
+    left: calc(var(--left) * 1%);
+    width: 100.5%; 
+    height: 100%; 
+    background: transparent; 
+    z-index: 1; 
+}
+
+/* === 游戏元素 === */
+.dino { --bottom: 0; position: absolute; left: 1%; height: 30%; bottom: calc(var(--bottom) * 1%); }
+.obstacle { --left: 50; --bottom: 0; position: absolute; left: calc(var(--left) * 1%); bottom: calc(var(--bottom) * 1%); }
+.obstacle-ground { height: 22%; }
+.obstacle-air { height: 18%; }
+.hide { display: none !important; }
+
+/* === 金币 === */
+.coin {
+    --left: 50;
+    --bottom: 20;
+    position: absolute;
+    left: calc(var(--left) * 1%);
+    bottom: calc(var(--bottom) * 1%);
+    height: 10%; 
+    animation: spin 1s linear infinite; 
+}
+@keyframes spin { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+
+/* === 横屏适配 === */
+#rotate-device-prompt { display: none; position: fixed; inset: 0; background-color: #2c241e; color: #d7c8b8; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; text-align: center; }
+#rotate-device-prompt i { font-size: 50px; margin-bottom: 20px; animation: rotate-anim 1.5s ease-in-out infinite; }
+@keyframes rotate-anim { 0% { transform: rotate(0deg); } 50% { transform: rotate(-90deg); } 100% { transform: rotate(-90deg); } }
+@media (orientation: portrait) { .game-console { display: none; } #rotate-device-prompt { display: flex; } }
+
+/* === 排行榜与游戏结束界面优化 (横屏适配版) === */
+
+/* 1. 独立排行榜界面 */
+.rank-screen {
+    background-color: rgba(247, 247, 247, 0.98);
+    z-index: 15;
+}
+.rank-screen h2 { font-size: 3vmin; color: #e67e22; margin: 5px 0; }
+
+/* 2. 游戏结束界面容器 */
+.game-over-screen {
+    background-color: rgba(44, 62, 80, 0.95); 
+    backdrop-filter: blur(5px);
+    z-index: 20;
+}
+
+/* 左右分栏布局核心 */
+.game-over-content {
+    display: flex;
+    width: 90%;
+    height: 85%;
+    background: #fff;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+}
+
+/* 左侧：结算信息 */
+.game-over-left {
+    flex: 1;
+    background: #f8f9fa;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border-right: 2px solid #eee;
+    gap: 10px;
+}
+
+.game-over-left h2 {
+    color: #c0392b;
+    font-size: 4vmin;
+    margin: 0;
+    font-weight: 900;
+    letter-spacing: 2px;
+}
+
+.final-score-box {
+    background: #2c3e50;
+    color: #f1c40f;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 100%;
+}
+.score-label { display: block; font-size: 1.5vmin; color: #bdc3c7; }
+.score-value { display: block; font-size: 4vmin; font-weight: bold; font-family: monospace; }
+
+/* 输入框组 */
+.input-group {
+    display: flex;
+    width: 100%;
+    gap: 5px;
+}
+#player-name-input {
+    flex: 1;
+    padding: 8px;
+    border: 2px solid #ddd;
+    border-radius: 5px;
+    font-family: monospace;
+    font-weight: bold;
+    outline: none;
+    text-align: center;
+}
+#player-name-input:focus { border-color: #e67e22; }
+
+#submit-score-btn {
+    background: #e67e22;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 0 15px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #d35400;
+}
+#submit-score-btn:active { transform: translateY(2px); box-shadow: none; }
+#submit-score-btn:disabled { background: #95a5a6; box-shadow: none; cursor: not-allowed; }
+
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    width: 100%;
+}
+.action-buttons button {
+    flex: 1;
+    margin: 0; 
+}
+
+/* 右侧：排行榜 */
+.game-over-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    padding: 10px;
+}
+
+.leaderboard-header {
+    text-align: center;
+    font-weight: bold;
+    color: #7f8c8d;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 5px;
+    margin-bottom: 5px;
+    font-size: 2vmin;
+}
+
+.leaderboard-container.full-height {
+    width: 90%;
+    height: 70%;
+    background: #fff;
+    border: 2px solid #eee;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.leaderboard-list {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* 滚动条美化 */
+.leaderboard-list::-webkit-scrollbar { width: 5px; }
+.leaderboard-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 3px; }
+
+/* 排行榜单项 */
+.rank-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 8px;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 1.8vmin;
+    color: #555;
+}
+.rank-item:last-child { border-bottom: none; }
+
+/* 前三名样式 */
+.rank-item:nth-child(1) { background: rgba(241, 196, 15, 0.1); color: #d35400; font-weight: bold; }
+.rank-item:nth-child(1) .rank-name::before { content: '🥇 '; }
+
+.rank-item:nth-child(2) { color: #7f8c8d; font-weight: bold; }
+.rank-item:nth-child(2) .rank-name::before { content: '🥈 '; }
+
+.rank-item:nth-child(3) { color: #d35400; font-weight: bold; }
+.rank-item:nth-child(3) .rank-name::before { content: '🥉 '; }
+
+.rank-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 60%; }
+.rank-score { font-family: monospace; }
+
+.loading-text { text-align: center; color: #999; margin-top: 20px; font-size: 1.5vmin; }

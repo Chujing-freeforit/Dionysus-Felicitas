@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Dino Runner</title>
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-console">
+        <!-- 左侧控制区 -->
+        <div class="console-controls left">
+            <div class="d-pad">
+                <div class="d-btn d-up"></div>
+                <div class="d-btn d-left"></div>
+                <div class="d-btn d-down"></div>
+                <div class="d-btn d-right"></div>
+            </div>
+        </div>
+
+        <!-- 中间屏幕区 -->
+        <div class="console-screen-bezel">
+            <div class="brand-logo">DINO RUNNER</div>
+            
+            <div class="world" data-world>
+                <!-- 计分板 -->
+                <div class="hud">
+                    <div class="coin-counter">
+                        <img src="imgs/coin.png" class="coin-icon" alt="金币">
+                        <span data-coin-score>0</span>
+                    </div>
+                    <div class="distance-score" data-score>0</div>
+                </div>
+
+                <!-- 菜单界面 -->
+                <div class="menu-screen" data-menu-screen>
+                    <button data-start-btn>开始游戏</button>
+                    <!-- 【新增】排行榜按钮 -->
+                    <button data-rank-btn>排行榜</button>
+                    <button data-skin-btn>更换皮肤</button>
+                    <button class="exit-btn" data-exit-btn>退出游戏</button>
+                </div>
+
+                <!-- 【新增】独立排行榜界面 (主界面点击进入) -->
+                <div class="rank-screen hide" data-rank-screen>
+                    <h2>🏆 排行榜 🏆</h2>
+                    <div class="leaderboard-container full-height">
+                        <div class="leaderboard-list" id="main-leaderboard-list">
+                            <!-- JS 填充 -->
+                        </div>
+                    </div>
+                    <button class="back-btn" data-rank-back-btn>返回</button>
+                </div>
+
+                <!-- 皮肤选择界面 -->
+                <div class="skin-selection-screen hide" data-skin-screen>
+                    <h2>自定义你的世界</h2>
+                    <div class="skin-layout">
+                        <div class="skin-sidebar">
+                            <div class="nav-item active" data-tab="dino">角色</div>
+                            <div class="nav-item" data-tab="groundObstacle">地面障碍</div>
+                            <div class="nav-item" data-tab="airObstacle">空中障碍</div>
+                            <div class="nav-item" data-tab="coin">金币</div>
+                            <div class="nav-item" data-tab="background">背景</div>
+                        </div>
+                        <div class="skin-content">
+                            <div class="skin-grid" data-skin-grid></div>
+                        </div>
+                    </div>
+                    <button class="back-btn" data-back-btn>保存并返回</button>
+                </div>
+
+                <!-- 【重构】游戏结束界面 (左右分栏布局) -->
+                <div class="game-over-screen hide" data-game-over-screen>
+                    <div class="game-over-content">
+                        <!-- 左侧：结算与提交 -->
+                        <div class="game-over-left">
+                            <h2>GAME OVER</h2>
+                            <div class="final-score-box">
+                                <span class="score-label">最终得分</span>
+                                <span class="score-value" data-final-total-score>0</span>
+                            </div>
+                            
+                            <div class="input-group">
+                                <input type="text" id="player-name-input" placeholder="输入名字(MAX 8)" maxlength="8">
+                                <button id="submit-score-btn">上传</button>
+                            </div>
+
+                            <div class="action-buttons">
+                                <button data-restart-btn>重试</button>
+                                <button data-menu-btn>菜单</button>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：排行榜 -->
+                        <div class="game-over-right">
+                            <div class="leaderboard-header">排行榜</div>
+                            <div class="leaderboard-list" id="game-over-leaderboard-list">
+                                <div class="loading-text">加载中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 背景层 -->
+                <div class="background-layer" data-background-layer></div>
+                <div class="background-layer" data-background-layer></div>
+
+                <!-- 地面层 -->
+                <div class="ground-container" data-ground-container></div>
+                <div class="ground-container" data-ground-container></div>
+ 
+                <img src="" class="dino" data-dino alt="恐龙角色">
+            </div>
+            
+            <div class="power-indicator"></div>
+        </div>
+
+        <!-- 右侧控制区 -->
+        <div class="console-controls right">
+            <div class="action-pad">
+                <div class="action-btn" id="jumpBtn">
+                    <i class="fas fa-arrow-up"></i>
+                </div>
+                <span class="action-label">JUMP</span>
+            </div>
+            <div class="extra-buttons">
+                <div class="select-btn">SELECT</div>
+                <div class="start-btn">START</div>
+            </div>
+        </div>
+    </div>
+
+    <div id="rotate-device-prompt">
+        <i class="fas fa-mobile-screen-button"></i>
+        <p>为了更好的体验，请旋转您的设备</p>
+    </div>
+
+    <script src="skins.js" type="module"></script>
+    <script src="background.js" type="module"></script> 
+    <script src="script.js" type="module"></script>
+
+</body>
+</html>
