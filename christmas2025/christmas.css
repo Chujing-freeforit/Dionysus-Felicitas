@@ -1,0 +1,148 @@
+/* =========================================
+   === 圣诞限定皮肤 (Christmas 2025) ===
+   ========================================= */
+
+/* === 1. 开发者固定装饰 === */
+.fixed-side-border {
+    position: fixed; top: 0; height: 100vh; width: 10vw; max-width: 120px;
+    object-fit: cover; z-index: 200; pointer-events: none;
+}
+.fixed-side-border.left { left: 0; }
+.fixed-side-border.right { right: 0; }
+
+.christmas-lights {
+    position: absolute; top: 52px; left: 0; width: 100%; height: 10px;
+    display: flex; justify-content: space-around; z-index: 3000; pointer-events: none;
+}
+.light-bulb {
+    width: 8px; height: 8px; border-radius: 50%; background-color: #fff;
+    animation: flash 1s infinite alternate; box-shadow: 0 0 5px #fff;
+}
+.light-bulb:nth-child(odd) { background-color: #ff0000; box-shadow: 0 0 5px #ff0000; animation-delay: 0.5s; }
+.light-bulb:nth-child(even) { background-color: #00ff00; box-shadow: 0 0 5px #00ff00; }
+@keyframes flash { 0% { opacity: 0.4; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1.2); } }
+
+/* === 2. 飘雪 (Canvas 版本) === */
+#xmas-snow-canvas {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    z-index: 9000; pointer-events: none;
+}
+
+/* === 3. 用户贴纸系统 === */
+.sticker-wrapper {
+    position: fixed; top: 50%; left: 50%; width: 100px; height: 100px;
+    transform-origin: center center; z-index: 9100; cursor: move;
+    touch-action: none; user-select: none;
+    animation: popSmoke 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+@keyframes popSmoke {
+    0% { transform: translate(-50%, -50%) scale(0) rotate(-45deg); opacity: 0; }
+    50% { opacity: 0.8; }
+    100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+}
+.sticker-content {
+    width: 100%; height: 100%; pointer-events: none;
+    display: flex; justify-content: center; align-items: center;
+}
+.sticker-content img { width: 100%; height: 100%; object-fit: contain; display: block; }
+.sticker-content span { font-size: 80px; }
+.sticker-wrapper.selected { border: 2px dashed #e6a23c; }
+.sticker-handle {
+    position: absolute; bottom: -20px; right: -20px; width: 40px; height: 40px;
+    background: #e6a23c; border: 3px solid #fff; border-radius: 50%;
+    display: none; z-index: 9200; box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+}
+.sticker-handle::after {
+    content: "↻"; color: #fff; font-weight: bold; font-size: 20px;
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+}
+.sticker-delete {
+    position: absolute; top: -20px; right: -20px; width: 30px; height: 30px;
+    background: #c0392b; border: 3px solid #fff; border-radius: 50%;
+    display: none; z-index: 9200;
+}
+.sticker-delete::after {
+    content: "×"; color: #fff; font-weight: bold; font-size: 20px;
+    position: absolute; top: 46%; left: 50%; transform: translate(-50%, -50%);
+}
+.sticker-wrapper.selected .sticker-handle,
+.sticker-wrapper.selected .sticker-delete { display: block; }
+.sticker-wrapper.locked {
+    position: absolute !important; border: none !important; pointer-events: none; z-index: 50;
+}
+.sticker-wrapper.locked .sticker-handle,
+.sticker-wrapper.locked .sticker-delete { display: none !important; }
+
+/* === 4. UI 界面 (按钮和菜单) === */
+.xmas-ui-container {
+    position: fixed; bottom: 120px; left: 20px; display: flex;
+    flex-direction: column; gap: 15px; z-index: 9500; align-items: center;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+.xmas-ui-container.minimized {
+    bottom: 50%; left: 0; transform: translateY(50%) translateX(-80%);
+    background: rgba(139, 0, 0, 0.7); padding: 15px; padding-left: 5px;
+    border-radius: 0 20px 20px 0; box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    backdrop-filter: blur(5px);
+}
+.xmas-ui-container.minimized:hover { transform: translateY(50%) translateX(0); }
+.xmas-btn {
+    width: 70px; height: 70px; border-radius: 50%; border: 3px solid #fff;
+    background-color: #8b0000; color: white; font-size: 30px;
+    display: flex; justify-content: center; align-items: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5); cursor: pointer;
+    transition: transform 0.2s;
+}
+.xmas-btn:active { transform: scale(0.95); }
+.asset-menu {
+    position: absolute; bottom: 85px; left: 0; background: rgba(44, 36, 29, 0.95);
+    border: 2px solid #e6a23c; border-radius: 15px; padding: 10px;
+    display: flex; gap: 10px; width: max-content; max-width: 80vw;
+    overflow-x: auto; box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    transform-origin: bottom left; transform: scale(0); opacity: 0;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.asset-menu.show { transform: scale(1); opacity: 1; }
+.asset-item {
+    width: 50px; height: 50px; background: rgba(255,255,255,0.1);
+    border-radius: 8px; padding: 5px; cursor: pointer; flex-shrink: 0;
+}
+.asset-item img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.asset-item span { font-size: 30px; line-height: 50px; text-align: center; display: block; pointer-events: none;}
+#btn-finish { background-color: #27ae60; display: none; }
+#btn-finish.mode-locked { background-color: #f39c12; }
+
+/* === 5. 游戏模式：强制隐藏所有装饰 === */
+body.game-mode-active .christmas-lights,
+body.game-mode-active #xmas-snow-canvas,
+body.game-mode-active .fixed-side-border,
+body.game-mode-active .sticker-wrapper,
+body.game-mode-active .xmas-ui-container {
+    display: none !important;
+}
+
+/* === 6. 圣诞对话插件按钮样式 === */
+.xmas-dialogue-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--accent-gold);
+    color: var(--bg-panel);
+    border: 2px solid #fff;
+    border-radius: 20px;
+    padding: 8px 20px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+    display: none; /* 默认隐藏 */
+}
+.xmas-dialogue-btn:hover {
+    filter: brightness(1.1);
+}
+
+/* === 7. 【新增】对话模式：隐藏贴纸UI === */
+body.dialogue-mode-active .xmas-ui-container {
+    display: none !important;
+}
