@@ -65,13 +65,14 @@
         .screen-menu {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
+            background-color: rgba(0, 0, 0, 0.85); /* 加深一点背景，突出文字 */
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
             z-index: 10;
+            padding: 20px;
         }
         .screen-menu.hidden { display: none; }
 
@@ -79,12 +80,12 @@
             background: #e6a23c;
             border: 2px solid #fff;
             color: #2c241e;
-            padding: 10px 20px;
+            padding: 8px 15px;
             font-family: inherit;
             font-weight: bold;
-            font-size: 16px;
+            font-size: 14px;
             cursor: pointer;
-            width: 160px;
+            width: 140px;
             text-transform: uppercase;
             box-shadow: 0 4px 0 #b37e2e; /* 立体按钮效果 */
             transition: transform 0.1s, box-shadow 0.1s;
@@ -93,6 +94,49 @@
             transform: translateY(4px);
             box-shadow: 0 0 0 #b37e2e;
         }
+        .menu-btn:disabled {
+            background: #95a5a6;
+            box-shadow: none;
+            cursor: not-allowed;
+        }
+
+        /* === 新增：输入框样式 === */
+        .retro-input {
+            background: #9ab09a;
+            border: 2px solid #2c241e;
+            padding: 8px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #2c241e;
+            width: 160px;
+            text-align: center;
+            margin-bottom: 5px;
+            outline: none;
+        }
+        .retro-input::placeholder { color: #5e5044; opacity: 0.7; }
+
+        /* === 新增：排行榜列表样式 === */
+        .rank-list-container {
+            width: 90%;
+            height: 60%;
+            background: #9ab09a;
+            border: 2px solid #2c241e;
+            padding: 5px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            font-size: 12px;
+            color: #2c241e;
+        }
+        .rank-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px dashed #5e5044;
+            padding: 4px 2px;
+        }
+        .rank-item:last-child { border-bottom: none; }
+        .rank-rank { font-weight: bold; margin-right: 5px; }
+        .rank-name { flex: 1; text-align: left; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rank-score { font-weight: bold; }
 
         /* 3. 虚拟按键区域 (底部) */
         .controls-area {
@@ -196,22 +240,37 @@
             <!-- 游戏画布 -->
             <canvas id="gameCanvas" width="300" height="300"></canvas>
 
-            <!-- 菜单遮罩 -->
+            <!-- 主菜单遮罩 -->
             <div id="menuOverlay" class="screen-menu">
-                <h2 style="color:#2c241e; text-shadow: 2px 2px 0 #fff;">SNAKE</h2>
+                <h2 style="color:#e6a23c; text-shadow: 2px 2px 0 #2c241e;">SNAKE</h2>
                 <button class="menu-btn" onclick="startGame()">开始游戏</button>
                 <button id="skinBtn" class="menu-btn" onclick="changeSkin()">更换皮肤</button>
-
-                <button class="menu-btn" onclick="alert('暂无记录')">查看排行榜</button>
+                <button class="menu-btn" onclick="showRankOverlay()">查看排行榜</button>
                 <button class="menu-btn" onclick="exitGame()">退出游戏</button>
             </div>
             
-            <!-- 游戏结束遮罩 -->
+            <!-- 游戏结束遮罩 (带输入框) -->
             <div id="gameOverOverlay" class="screen-menu hidden">
                 <h2 style="color:#c0392b; text-shadow: 2px 2px 0 #fff;">GAME OVER</h2>
                 <p style="color:#cea688; font-weight:bold;">得分: <span id="finalScore">0</span></p>
+                
+                <!-- 新增：输入名字区域 -->
+                <div style="margin: 10px 0; text-align: center;">
+                    <input type="text" id="playerNameInput" class="retro-input" placeholder="输入名字(MAX 8)" maxlength="8">
+                    <button id="submitScoreBtn" class="menu-btn" style="width: 100px; font-size: 12px;" onclick="submitScore()">上传分数</button>
+                </div>
+
                 <button class="menu-btn" onclick="resetGame()">再来一局</button>
                 <button class="menu-btn" onclick="showMainMenu()">返回菜单</button>
+            </div>
+
+            <!-- 新增：排行榜遮罩 -->
+            <div id="rankOverlay" class="screen-menu hidden">
+                <h3 style="color:#e6a23c; margin-bottom: 5px;">🏆 排行榜 🏆</h3>
+                <div id="rankList" class="rank-list-container">
+                    <div style="text-align:center; padding-top:20px;">加载中...</div>
+                </div>
+                <button class="menu-btn" onclick="closeRankOverlay()">返回</button>
             </div>
         </div>
     </div>
@@ -232,8 +291,6 @@
             <span class="action-label">加速</span>
         </div>
     </div>
-
-
 
     <script>
          // === 皮肤配置 ===
@@ -290,6 +347,7 @@
         function startGame() {
             document.getElementById('menuOverlay').classList.add('hidden');
             document.getElementById('gameOverOverlay').classList.add('hidden');
+            document.getElementById('rankOverlay').classList.add('hidden');
             resetVars();
             isGameRunning = true;
             drawGame();
@@ -312,18 +370,16 @@
 
         function showMainMenu() {
             document.getElementById('gameOverOverlay').classList.add('hidden');
+            document.getElementById('rankOverlay').classList.add('hidden');
             document.getElementById('menuOverlay').classList.remove('hidden');
             isGameRunning = false;
             clearTimeout(gameLoop);
         }
 
-        // === 新增：退出游戏逻辑 ===
         function exitGame() {
-            // 调用父窗口(主页)的 closeGame 函数
             if (window.parent && window.parent.closeGame) {
                 window.parent.closeGame();
             } else {
-                // 如果是单独打开的网页，无法关闭，提示一下
                 alert("请直接关闭浏览器标签页");
             }
         }
@@ -347,24 +403,19 @@
             gameLoop = setTimeout(drawGame, 1000 / currentSpeed);
         }
 
-                function isGameOver() {
+        function isGameOver() {
+            if (velocityX === 0 && velocityY === 0) return false; 
+
             let gameOver = false;
 
-            // === 1. 撞墙检测 ===
+            // 撞墙检测
             if (headX < 0 || headX === tileCount || headY < 0 || headY === tileCount) {
                 gameOver = true;
             }
 
-            // === 2. 撞自己检测 ===
-            // 【修复关键】：如果蛇是静止的 (velocityX 和 velocityY 都是 0)，
-            // 说明刚开始游戏，这时候不要检测撞自己，否则会秒挂。
-            if (velocityX === 0 && velocityY === 0) {
-                return false;
-            }
-
+            // 撞自己检测
             for (let i = 0; i < snakeParts.length; i++) {
                 let part = snakeParts[i];
-                // 只有当身体部分真的和头重叠时才算输
                 if (part.x === headX && part.y === headY) {
                     gameOver = true;
                     break;
@@ -373,34 +424,42 @@
 
             if (gameOver) {
                 finalScoreEl.innerText = score;
+                
+                // 准备结算界面
+                const submitBtn = document.getElementById('submitScoreBtn');
+                const nameInput = document.getElementById('playerNameInput');
+                
+                // 恢复按钮状态
+                submitBtn.disabled = false;
+                submitBtn.innerText = "上传分数";
+                // 自动填入上次的名字
+                nameInput.value = localStorage.getItem('snakePlayerName') || '';
+
                 document.getElementById('gameOverOverlay').classList.remove('hidden');
                 isGameRunning = false;
             }
+
             return gameOver;
         }
 
 
         function clearScreen() {
-            // 使用当前皮肤的背景色
             ctx.fillStyle = skins[currentSkinKey].bg; 
             ctx.fillRect(0, 0, canvas.width, canvas.height);
         }
 
         function drawSnake() {
-            // 使用当前皮肤的蛇身颜色
             ctx.fillStyle = skins[currentSkinKey].snake; 
             for (let i = 0; i < snakeParts.length; i++) {
                 let part = snakeParts[i];
                 ctx.fillRect(part.x * gridSize, part.y * gridSize, gridSize - 2, gridSize - 2);
             }
 
-            // 把头加进去
             snakeParts.push(new SnakePart(headX, headY));
             while (snakeParts.length > tailLength) {
                 snakeParts.shift(); 
             }
 
-            // 使用当前皮肤的蛇头颜色
             ctx.fillStyle = skins[currentSkinKey].head; 
             ctx.fillRect(headX * gridSize, headY * gridSize, gridSize - 2, gridSize - 2);
         }
@@ -412,18 +471,14 @@
 
         function drawApple() {
             ctx.fillStyle = skins[currentSkinKey].apple;
-            
-            // 圣诞皮肤特供：苹果变成圆形的装饰球
             if (skins[currentSkinKey].isRound) {
                 ctx.beginPath();
-                // 计算圆心位置
                 let centerX = appleX * gridSize + gridSize / 2;
                 let centerY = appleY * gridSize + gridSize / 2;
                 let radius = (gridSize - 2) / 2;
                 ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
                 ctx.fill();
             } else {
-                // 经典皮肤：方形苹果
                 ctx.fillRect(appleX * gridSize, appleY * gridSize, gridSize - 2, gridSize - 2);
             }
         }
@@ -435,7 +490,6 @@
                 tailLength++;
                 score++;
                 scoreEl.innerText = score;
-                // 稍微增加一点难度
                 if(score % 5 === 0) speed += 0.5;
             }
         }
@@ -453,20 +507,16 @@
         }
 
         // === 控制逻辑 ===
-        
-        // 键盘控制
         document.body.addEventListener('keydown', keyDown);
         document.body.addEventListener('keyup', keyUp);
 
         function keyDown(event) {
-            // 冲刺键 (Shift 或 Space)
+            // 如果正在输入名字，不要触发方向键移动
+            if (document.activeElement.tagName === 'INPUT') return;
+
             if (event.code === 'Space' || event.code === 'ShiftLeft') {
                 isDash = true;
             }
-
-            // 方向键
-            // 只有当蛇已经在移动时，才禁止反向移动
-            // 初始状态 velocityX=0, velocityY=0 时允许任意方向
             if (event.keyCode === 38) { // Up
                 if (velocityY === 1) return;
                 velocityY = -1; velocityX = 0;
@@ -491,22 +541,17 @@
             }
         }
 
-                function changeSkin() {
-            // 切换逻辑：如果是默认就变圣诞，如果是圣诞就变默认
+        function changeSkin() {
             if (currentSkinKey === 'default') {
                 currentSkinKey = 'christmas';
             } else {
                 currentSkinKey = 'default';
             }
-
-            // 找到按钮，更新按钮文字，提示当前皮肤
             const skinBtn = document.getElementById('skinBtn');
             skinBtn.innerText = "皮肤: " + skins[currentSkinKey].name;
 
-            // 如果游戏没在运行，手动重画一次屏幕，让玩家立刻看到背景变了
             if (!isGameRunning) {
                 clearScreen();
-                // 简单画个蛇和苹果示意一下
                 ctx.fillStyle = skins[currentSkinKey].snake;
                 ctx.fillRect(10 * gridSize, 10 * gridSize, gridSize - 2, gridSize - 2);
                 ctx.fillStyle = skins[currentSkinKey].apple;
@@ -514,9 +559,7 @@
             }
         }
 
-
         // === 虚拟按键绑定 ===
-        // 使用 touchstart 和 mousedown 保证手机和电脑都能点
         function bindBtn(id, action) {
             const btn = document.getElementById(id);
             const startAction = (e) => { e.preventDefault(); action(); };
@@ -529,7 +572,6 @@
         bindBtn('btnLeft', () => { if (velocityX !== 1) { velocityY = 0; velocityX = -1; } });
         bindBtn('btnRight', () => { if (velocityX !== -1) { velocityY = 0; velocityX = 1; } });
 
-        // 冲刺按钮特殊处理 (按下加速，松开恢复)
         const dashBtn = document.getElementById('btnDash');
         const startDash = (e) => { e.preventDefault(); isDash = true; };
         const endDash = (e) => { e.preventDefault(); isDash = false; };
@@ -538,6 +580,114 @@
         dashBtn.addEventListener('touchstart', startDash);
         dashBtn.addEventListener('mouseup', endDash);
         dashBtn.addEventListener('touchend', endDash);
+
+        // ==========================================
+        // === 后端通信功能 (UI 优化版) ===
+        // ==========================================
+
+        const API_BASE = 'http://139.199.180.70:3000';
+
+        // 1. 提交分数 (点击按钮触发)
+        function submitScore() {
+            const nameInput = document.getElementById('playerNameInput');
+            const submitBtn = document.getElementById('submitScoreBtn');
+            const playerName = nameInput.value.trim();
+
+            if (!playerName) {
+                alert("请输入名字！"); // 这里可以用 alert，或者做一个小的提示文字
+                return;
+            }
+
+            // 锁定按钮
+            submitBtn.disabled = true;
+            submitBtn.innerText = "上传中...";
+
+            // 保存名字到本地
+            localStorage.setItem('snakePlayerName', playerName);
+
+            fetch(`${API_BASE}/api/score`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    game: 'snake',
+                    name: playerName,
+                    score: score
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                submitBtn.innerText = "成功!";
+                // 上传成功后，直接跳转到排行榜看看
+                setTimeout(() => {
+                    document.getElementById('gameOverOverlay').classList.add('hidden');
+                    showRankOverlay();
+                }, 500);
+            })
+            .catch(err => {
+                console.error(err);
+                submitBtn.disabled = false;
+                submitBtn.innerText = "失败,重试";
+            });
+        }
+
+        // 2. 显示排行榜遮罩
+        function showRankOverlay() {
+            document.getElementById('menuOverlay').classList.add('hidden');
+            document.getElementById('gameOverOverlay').classList.add('hidden');
+            document.getElementById('rankOverlay').classList.remove('hidden');
+            
+            fetchRankData();
+        }
+
+        // 3. 关闭排行榜遮罩
+        function closeRankOverlay() {
+            document.getElementById('rankOverlay').classList.add('hidden');
+            document.getElementById('menuOverlay').classList.remove('hidden');
+        }
+
+        // 4. 获取并渲染排行榜数据
+        function fetchRankData() {
+            const listContainer = document.getElementById('rankList');
+            listContainer.innerHTML = '<div style="text-align:center; padding-top:20px;">加载中...</div>';
+
+            fetch(`${API_BASE}/api/rank?game=snake`)
+            .then(res => res.json())
+            .then(list => {
+                renderRankList(list);
+            })
+            .catch(err => {
+                console.error(err);
+                listContainer.innerHTML = '<div style="text-align:center; color:#c0392b;">加载失败</div>';
+            });
+        }
+
+        function renderRankList(list) {
+            const listContainer = document.getElementById('rankList');
+            listContainer.innerHTML = "";
+
+            if (!list || list.length === 0) {
+                listContainer.innerHTML = '<div style="text-align:center; padding-top:20px;">暂无数据</div>';
+                return;
+            }
+
+            list.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'rank-item';
+                
+                // 前三名加个奖牌图标
+                let rankIcon = `${index + 1}.`;
+                if (index === 0) rankIcon = '🥇';
+                if (index === 1) rankIcon = '🥈';
+                if (index === 2) rankIcon = '🥉';
+
+                div.innerHTML = `
+                    <span class="rank-rank">${rankIcon}</span>
+                    <span class="rank-name">${item.name}</span>
+                    <span class="rank-score">${item.score}</span>
+                `;
+                listContainer.appendChild(div);
+            });
+        }
 
     </script>
 </body>
